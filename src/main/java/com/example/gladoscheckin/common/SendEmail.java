@@ -2,6 +2,7 @@ package com.example.gladoscheckin.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
 import java.util.Properties;
@@ -15,14 +16,15 @@ import javax.mail.internet.MimeMessage;
  * JDK 版本: JDK 1.7 以上（必须）
  */
 @Slf4j
+@Configuration
 public class SendEmail {
     //发件人的邮箱和密码（替换为自己的邮箱和密码）
     //PS: 某些邮箱服务器为了增加邮箱本身密码的安全性，给 SMTP 客户端设置了独立密码（有的邮箱称为“授权码”）,
     //对于开启了独立密码的邮箱, 这里的邮箱密码必需使用这个独立密码（授权码）。
     @Value("${email.myEmailAccount}")
-    public static String myEmailAccount;
+    public String myEmailAccount;
     @Value("${email.myEmailPassword}")
-    public static String myEmailPassword;
+    public String myEmailPassword;
 
     //发件人邮箱的 SMTP服务器地址,必须准确,不同邮件服务器地址不同, 一般(只是一般, 绝非绝对)格式为: smtp.xxx.com
     //网易163邮箱的 SMTP 服务器地址为: smtp.163.com
@@ -30,10 +32,10 @@ public class SendEmail {
 
     // 收件人邮箱（替换为自己知道的有效邮箱）
     @Value("${email.receiveMailAccount}")
-    public static String receiveMailAccount;
+    public String receiveMailAccount;
 
 
-    public static String sendMessage(String email, String emailHeader, String emailMessage) throws Exception {
+    public String sendMessage(String email, String emailHeader, String emailMessage) throws Exception {
         //1.创建参数配置, 用于连接邮件服务器的参数配置
         Properties props = new Properties();                    //参数配置
         props.setProperty("mail.transport.protocol", "smtp");   //使用的协议（JavaMail规范要求）
@@ -82,7 +84,7 @@ public class SendEmail {
         return "邮件发送成功";
     }
 
-    public static void main(String[] args) throws Exception {
+    public void main(String[] args) throws Exception {
         //1.创建参数配置, 用于连接邮件服务器的参数配置
         Properties props = new Properties();                    //参数配置
         props.setProperty("mail.transport.protocol", "smtp");   //使用的协议（JavaMail规范要求）
@@ -145,7 +147,7 @@ public class SendEmail {
      * @return
      * @throws Exception
      */
-    public static MimeMessage createMimeMessage(Session session, String sendMail, String receiveMail) throws Exception {
+    public MimeMessage createMimeMessage(Session session, String sendMail, String receiveMail) throws Exception {
         // 1.创建一封邮件
         MimeMessage message = new MimeMessage(session);
         // 2.From:发件人（昵称有广告嫌疑，避免被邮件服务器误认为是滥发广告以至返回失败，请修改昵称）

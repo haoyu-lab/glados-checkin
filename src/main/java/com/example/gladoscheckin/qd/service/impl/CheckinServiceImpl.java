@@ -7,6 +7,7 @@ import com.example.gladoscheckin.common.HttpUtil;
 import com.example.gladoscheckin.common.SendEmail;
 import com.example.gladoscheckin.qd.service.CheckinService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +18,8 @@ import java.util.Map;
 @Service
 @Slf4j
 public class CheckinServiceImpl implements CheckinService {
-
+    @Autowired
+    private SendEmail sendEmail;
     @Override
     public AjaxResult checkin() {
         RestTemplate restTemplate = new RestTemplate();
@@ -76,11 +78,11 @@ public class CheckinServiceImpl implements CheckinService {
 
             }
             //调用邮箱接口发送
-            SendEmail.sendMessage(email,emailHeader,emailMessage);
+            sendEmail.sendMessage(email,emailHeader,emailMessage);
         } catch (Exception e) {
             e.printStackTrace();
             try {
-                SendEmail.sendMessage(email,"glados签到服务异常",e.getMessage());
+                sendEmail.sendMessage(email,"glados签到服务异常",e.getMessage());
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
