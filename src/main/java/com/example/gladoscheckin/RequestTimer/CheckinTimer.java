@@ -13,10 +13,10 @@ public class CheckinTimer {
     @Autowired
     private CheckinService checkinService;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 5 * * ?")
     public void checkin(){
-        log.info("每天凌晨glados签到开始");
+        log.info("每天五点glados签到开始");
         checkinService.checkin();
-        log.info("每天凌晨glados签到结束");
+        log.info("每天五点glados签到结束");
     }
 }
