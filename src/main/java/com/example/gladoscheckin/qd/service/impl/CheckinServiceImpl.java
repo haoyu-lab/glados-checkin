@@ -52,7 +52,7 @@ public class CheckinServiceImpl implements CheckinService {
             }
             if (status == 1) {
                 log.info("今日已签到:{}", qdMessage);
-                emailHeader = "glados今日已经签到";
+                emailHeader = "glados今日已经签到！";
             }
             if (status == -2) {
                 log.info("签到失败:{}", qdMessage);
