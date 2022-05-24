@@ -74,7 +74,7 @@ public class CheckinServiceImpl implements CheckinService {
                 BigDecimal bigDecimal = new BigDecimal(1024);
                 formatTraffic = formatTraffic.divide(bigDecimal).divide(bigDecimal).divide(bigDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                emailMessage = "VIP剩余" + leftDays + "天，" + "流量剩余" + formatTraffic + "GB";
+                emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
 
             }
             //调用邮箱接口发送
