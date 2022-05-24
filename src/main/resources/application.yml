@@ -1,2 +1,9 @@
 server:
   port: 8898
+email:
+  #发件人邮箱
+  myEmailAccount: xxx@163.com
+  #发件人邮箱密码（授权码）
+  myEmailPassword: xxx
+  #收件人邮箱（此处配置无效，从接口中获取的邮箱）
+  receiveMailAccount: xxx@qq.com

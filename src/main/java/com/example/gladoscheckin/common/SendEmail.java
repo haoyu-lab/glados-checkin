@@ -1,6 +1,7 @@
 package com.example.gladoscheckin.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.Properties;
@@ -18,15 +19,18 @@ public class SendEmail {
     //发件人的邮箱和密码（替换为自己的邮箱和密码）
     //PS: 某些邮箱服务器为了增加邮箱本身密码的安全性，给 SMTP 客户端设置了独立密码（有的邮箱称为“授权码”）,
     //对于开启了独立密码的邮箱, 这里的邮箱密码必需使用这个独立密码（授权码）。
-    public static String myEmailAccount = "15135842296@163.com";
-    public static String myEmailPassword = "QXSHNPZZAQVVLRJW";
+    @Value("${email.myEmailAccount}")
+    public static String myEmailAccount;
+    @Value("${email.myEmailPassword}")
+    public static String myEmailPassword;
 
     //发件人邮箱的 SMTP服务器地址,必须准确,不同邮件服务器地址不同, 一般(只是一般, 绝非绝对)格式为: smtp.xxx.com
     //网易163邮箱的 SMTP 服务器地址为: smtp.163.com
     public static String myEmailSMTPHost = "smtp.163.com";
 
     // 收件人邮箱（替换为自己知道的有效邮箱）
-    public static String receiveMailAccount = "1103455965@qq.com";
+    @Value("${email.receiveMailAccount}")
+    public static String receiveMailAccount;
 
 
     public static String sendMessage(String email, String emailHeader, String emailMessage) throws Exception {
