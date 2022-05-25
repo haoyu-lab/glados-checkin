@@ -1,5 +1,26 @@
 server:
   port: 8898
+  servlet:
+    context-path: /
+
+# DataSource Config
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://xxx:3306/glados?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: xxx
+    password: xxx
+
+mybatis-plus:
+  mapper-locations: classpath:mapping/*Mapper.xml
+
+logging:
+  level:
+    com:
+      example:
+        gladoscheckin:
+          qd:
+          mapper: debug
 email:
   #发件人邮箱
   myEmailAccount: xxx@163.com
