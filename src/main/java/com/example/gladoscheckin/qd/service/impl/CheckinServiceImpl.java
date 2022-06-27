@@ -77,13 +77,27 @@ public class CheckinServiceImpl implements CheckinService {
                     email = (String) jsonObjectInner.get("email");
                     String leftDays = (String) jsonObjectInner.get("leftDays");
                     leftDays = leftDays.substring(0,leftDays.indexOf("."));
-                    Long traffic = (Long) jsonObjectInner.get("traffic");
-                    BigDecimal formatTraffic = new BigDecimal(traffic);
+                    Object traffic1 = jsonObjectInner.get("traffic");
+                    if(traffic1 instanceof Integer){
+                        if((Integer) traffic1 == 0){
+                            BigDecimal formatTraffic = new BigDecimal(0);
+                            emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
+                        }else{
+                            Long traffic = (Long) jsonObjectInner.get("traffic");
+                            BigDecimal formatTraffic = new BigDecimal(traffic);
+                            BigDecimal bigDecimal = new BigDecimal(1024);
+                            formatTraffic = formatTraffic.divide(bigDecimal).divide(bigDecimal).divide(bigDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+                            emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
+                        }
+                    }else{
+                        Long traffic = (Long) jsonObjectInner.get("traffic");
+                        BigDecimal formatTraffic = new BigDecimal(traffic);
 
-                    BigDecimal bigDecimal = new BigDecimal(1024);
-                    formatTraffic = formatTraffic.divide(bigDecimal).divide(bigDecimal).divide(bigDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        BigDecimal bigDecimal = new BigDecimal(1024);
+                        formatTraffic = formatTraffic.divide(bigDecimal).divide(bigDecimal).divide(bigDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
+                    }
 
-                    emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
 
                 }
                 //调用邮箱接口发送
