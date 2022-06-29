@@ -83,8 +83,8 @@ public class CheckinServiceImpl implements CheckinService {
                             BigDecimal formatTraffic = new BigDecimal(0);
                             emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
                         }else{
-                            Long traffic = (Long) jsonObjectInner.get("traffic");
-                            BigDecimal formatTraffic = new BigDecimal(traffic);
+//                            Long traffic = (Long) jsonObjectInner.get("traffic");
+                            BigDecimal formatTraffic = new BigDecimal((Integer)traffic1);
                             BigDecimal bigDecimal = new BigDecimal(1024);
                             formatTraffic = formatTraffic.divide(bigDecimal).divide(bigDecimal).divide(bigDecimal).setScale(2, BigDecimal.ROUND_HALF_UP);
                             emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
