@@ -11,6 +11,7 @@ import com.example.gladoscheckin.qd.service.PowerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -98,7 +99,9 @@ public class CheckinServiceImpl implements CheckinService {
                         emailMessage = "VIP剩余" + leftDays + "天，" + "本月已使用流量" + formatTraffic + "GB";
                     }
 
-
+                    if(!ObjectUtils.isEmpty(emailMessage)){
+                        log.info("用户{}：{}",e.getEmail(), emailMessage);
+                    }
                 }
                 //调用邮箱接口发送
                 sendEmail.sendMessage(email,emailHeader,emailMessage);
