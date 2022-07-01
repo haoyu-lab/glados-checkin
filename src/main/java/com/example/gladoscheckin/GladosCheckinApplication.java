@@ -4,6 +4,7 @@ import com.alibaba.druid.support.http.StatViewServlet;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ComponentScan("com.example.gladoscheckin.*")
 @MapperScan("com.example.gladoscheckin.*.mapper")
+@ServletComponentScan
 public class GladosCheckinApplication {
 
     public static void main(String[] args) {
