@@ -3,6 +3,7 @@ package com.example.gladoscheckin.common.filter;
 import com.alibaba.fastjson.JSON;
 import com.example.gladoscheckin.common.Result;
 import com.example.gladoscheckin.common.hander.GlobalExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
+@Slf4j
 @WebFilter(filterName = "SecurityFilter",urlPatterns ="/*")
 public class SecurityFilter implements Filter {
 
@@ -51,6 +52,7 @@ public class SecurityFilter implements Filter {
         if(!StringUtils.isEmpty(token) && "haoyujiayou".equals(token)){
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
+            log.info("token错误");
             handerMessage(response,"token错误");
         }
     }
