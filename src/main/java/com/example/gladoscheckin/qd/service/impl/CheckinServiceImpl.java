@@ -108,12 +108,15 @@ public class CheckinServiceImpl implements CheckinService {
                     }
                 }
                 //调用邮箱接口发送
-                sendEmail.sendMessage(email,emailHeader,emailMessage);
+                //TODO 去除邮箱推送，改为微信推送
+//                sendEmail.sendMessage(email,emailHeader,emailMessage);
+                //调用微信推送接口发送
                 sendWeChat.sendMessage(e.getPushPlusToken(),emailHeader,emailMessage);
             } catch (Exception e1) {
                 e1.printStackTrace();
                 try {
-                    sendEmail.sendMessage(email,"glados签到服务异常",e1.getMessage());
+                    //TODO 去除邮箱推送，改为微信推送
+//                    sendEmail.sendMessage(email,"glados签到服务异常",e1.getMessage());
                     sendWeChat.sendMessage(e.getPushPlusToken(),"glados签到服务异常",emailMessage);
                 } catch (Exception exception) {
                     exception.printStackTrace();
