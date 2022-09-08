@@ -8,4 +8,6 @@ public class Power {
     private String email;
     /** cookie */
     private String cookie;
+    /** 推送加微信推送token */
+    private String pushPlusToken;
 }

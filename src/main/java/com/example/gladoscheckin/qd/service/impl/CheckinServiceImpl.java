@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.HttpUtil;
 import com.example.gladoscheckin.common.SendEmail;
+import com.example.gladoscheckin.common.SendWeChat;
 import com.example.gladoscheckin.qd.pojo.Power;
 import com.example.gladoscheckin.qd.service.CheckinService;
 import com.example.gladoscheckin.qd.service.PowerService;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,6 +28,8 @@ public class CheckinServiceImpl implements CheckinService {
     private SendEmail sendEmail;
     @Autowired
     private PowerService powerService;
+    @Autowired
+    private SendWeChat sendWeChat;
     @Override
     public AjaxResult checkin() {
         RestTemplate restTemplate = new RestTemplate();
@@ -105,10 +109,12 @@ public class CheckinServiceImpl implements CheckinService {
                 }
                 //调用邮箱接口发送
                 sendEmail.sendMessage(email,emailHeader,emailMessage);
+                sendWeChat.sendMessage(e.getPushPlusToken(),emailHeader,emailMessage);
             } catch (Exception e1) {
                 e1.printStackTrace();
                 try {
                     sendEmail.sendMessage(email,"glados签到服务异常",e1.getMessage());
+                    sendWeChat.sendMessage(e.getPushPlusToken(),"glados签到服务异常",emailMessage);
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
