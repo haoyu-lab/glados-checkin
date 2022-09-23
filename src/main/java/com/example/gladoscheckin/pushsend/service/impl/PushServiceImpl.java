@@ -28,6 +28,7 @@ public class PushServiceImpl implements PushService {
     @Override
     public int pushWeChat(String message) {
         List<Power> powerList = powerService.selectPower();
+//        powerList = powerList.stream().filter(e -> e.getEmail().contains("187122")).collect(Collectors.toList());
         message = "尊敬的用户您好！\n"+"       "+message+"\n        感谢您的使用！";
         String finalMessage = message;
         AtomicInteger count = new AtomicInteger();
