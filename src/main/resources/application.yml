@@ -64,3 +64,11 @@ email:
   myEmailPassword: xxx
   #收件人邮箱（此处配置无效，从接口中获取的邮箱）
   receiveMailAccount: xxx@qq.com
+
+metro:
+  # access_token
+  authorization: xxxxx
+    # 抢票时间段
+  time: xxxx
+    # 邮件接收邮箱
+  email: xxxx
