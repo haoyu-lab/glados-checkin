@@ -10,34 +10,41 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.example.gladoscheckin.common.SendWeChat;
 import com.example.gladoscheckin.metro.MetroVO;
+import com.example.gladoscheckin.metro.Metror;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@Slf4j
 public class TaskUtils {
 
+    @Autowired
+    private SendWeChat sendWeChat;
     /**
      * 检查今天是否需要抢票
      */
-    public void checkTomorrowIsHoliday(MetroVO metroVO){
+    public void checkTomorrowIsHoliday(Boolean  isReservation){
         String res = HttpUtil.get("https://tool.bitefu.net/jiari/?d=" + DateUtil.tomorrow().toString("yyyyMMdd"));
-        System.out.println("检查一下明天是不是假期: " + res);
+        log.info("检查一下明天是不是假期{}", res);
         if ("0".equals(res)){
-            System.out.println("嘤嘤嘤明天要上班，还是需要抢票滴！！");
-            metroVO.setIsReservation(true);
+            log.info("嘤嘤嘤明天要上班，还是需要抢票滴！！");
+            isReservation = true;
         }else{
-            System.out.println("明个放假，不用抢票啦！！");
-            metroVO.setIsReservation(false);
+            log.info("明个放假，不用抢票啦！！");
+            isReservation = false;
         }
     }
 
     /**
      * 检查token是否过期
      */
-    public Boolean checkToken(MetroVO metroVO){
-        String aToken = Base64.decodeStr(metroVO.getAuthorization());
+    public Boolean checkToken(Metror metror) throws Exception {
+        String aToken = Base64.decodeStr(metror.getMetroToken());
         String[] aTokens = aToken.split(",");
         DateTime tokenTime = new DateTime(Long.parseLong(aTokens[1]));
         LocalDateTime tokenRxpireTime = LocalDateTimeUtil.of(tokenTime);
@@ -46,16 +53,25 @@ public class TaskUtils {
         DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"),DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
         if(tokenRxpireTime.isBefore(startTime)){
-            System.out.println("您的token已过期，请尽快修改！");
+            log.info("{}：您的token已过期，请尽快修改！" + metror.getName()+ " " + metror.getPhone());
+            String emailMessage = "您的token已过期，请尽快联系管理员修改！";
+            String emailHeader = "地铁预约失败！！！";
             /** 此处需添加微信通知 */
+            sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
+
             return false;
         }else if (tokenRxpireTime.isBefore(reservationTime)){
+            log.info("{}：您的token将在一天后过期，请尽快修改！" + metror.getName());
             System.out.println("您的token将在一天后过期，请尽快修改！");
+            String emailMessage = "您的token将在一天后过期，请尽快联系管理员修改！";
+            String emailHeader = "token到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
             /** 此处需添加微信通知 */
+            sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 
             return true;
         }else {
+            log.info("{}：token检查完成，未过期！" + metror.getName());
             System.out.println("token检查完成，未过期！");
 
             return true;
@@ -63,10 +79,10 @@ public class TaskUtils {
 //        System.out.println("Token过期时间：" + tokenRxpireTime);
     }
 
-    public void startReservation(MetroVO metroVO){
-        if (!metroVO.getIsReservation()) {
-            return;
-        }
+    public void startReservation(Metror metror) throws Exception {
+//        if (!metror.getIsReservation()) {
+//            return;
+//        }
 
         boolean flag = false;
         int count = 0;
@@ -77,19 +93,20 @@ public class TaskUtils {
         param.set("stationName", "沙河站");
         param.set("enterDate", DateUtil.tomorrow().toString("yyyyMMdd"));
         param.set("snapshotTimeSlot", "0630-0930");
-        param.set("timeSlot", metroVO.getTime());
+        param.set("timeSlot", metror.getMetroTime());
 
-        System.out.println("地铁预约参数组装完成"+ param);
+        log.info("{}：地铁预约参数组装完成" + metror.getName());
 
         while (count < 5 && !flag){
             System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次请求预约接口");
             String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
-                    .header(Header.AUTHORIZATION, metroVO.getAuthorization())
+                    .header(Header.AUTHORIZATION, metror.getMetroToken())
                     .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
                     .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
                     .body(param.toString())
                     .timeout(10000)
                     .execute().body();
+
             System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次预约结果返回值为："+resultStr);
             if (resultStr != null){
                 JSONObject res;
@@ -114,12 +131,30 @@ public class TaskUtils {
 
         /** 改为微信通知 */
         if (flag){
+            String emailMessage = "您的地铁预约抢票 成功！！！ 请移步 北京地铁预约出行 公众号查看";
+            String emailHeader = "地铁预约抢票服务通知";
+            sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 //            MailUtils.sendResMail(email, "预约成功！","");
         }else{
+            String emailMessage = "您的地铁预约抢票 失败！！！(自动抢票时间为每日 12点、20点)，详情请联系管理员咨询";
+            String emailHeader = "地铁预约抢票服务通知";
+            sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 //            MailUtils.sendResMail(email, "预约失败！","");
         }
 
-        System.out.println(LocalDateTime.now() + ": 定时任务执行完成");
+        log.info("{}：定时任务执行完成" + LocalDateTime.now());
+    }
+
+    public void start(Metror metror){
+        /** 检查token是否过期 */
+        try{
+            Boolean aBoolean = checkToken(metror);
+            if(aBoolean){
+                startReservation(metror);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

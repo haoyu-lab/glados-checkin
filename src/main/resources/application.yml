@@ -8,9 +8,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://ip:3306/glados?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai  #本地环境
-      username: xxx
-      password: xxx
+      url: jdbc:mysql://82.157.101.15:3306/glados?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai  #本地环境
+      username: root
+      password: 123456hhy
       initial-size: 3 # 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
       min-idle: 3 # 最小连接池数量
       maxActive: 10 # 最大连接池数量
@@ -59,16 +59,16 @@ logging:
           mapper: debug
 email:
   #发件人邮箱
-  myEmailAccount: xxx@163.com
+  myEmailAccount: 15135842296@163.com
   #发件人邮箱密码（授权码）
-  myEmailPassword: xxx
+  myEmailPassword: QXSHNPZZAQVVLRJW
   #收件人邮箱（此处配置无效，从接口中获取的邮箱）
   receiveMailAccount: xxx@qq.com
 
-metro:
-  # access_token
-  authorization: xxxxx
-    # 抢票时间段
-  time: xxxx
-    # 邮件接收邮箱
-  email: xxxx
+#metro:
+#  # access_token
+#  authorization: xxxxx
+#    # 抢票时间段
+#  time: 0800-0810
+#    # 邮件接收邮箱
+#  email: xxxx
