@@ -30,10 +30,6 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         //查询数据
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
-//        String authorization = "YTliYmQzNDQtMzE5Zi00NjcxLTgyYTMtZmQwNzY5YzA5ZTk2LDE2NjcyMDk2NzE1MDMsQ2QvcnlMYVZaZS8yQ0VQY2NlaFZ1NGM0U2MwPQ==";
-//        String time = "0800-0810";
-//        MetroVO metroVO = MetroVO.builder().authorization(authorization)
-//                .time(time).build();
         if(CollectionUtils.isEmpty(metrors)){
             return AjaxResult.build(Status.SERVER_ERROR,"无预约用户","无预约用户");
         }
