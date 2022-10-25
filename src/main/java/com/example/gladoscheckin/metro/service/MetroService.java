@@ -9,4 +9,6 @@ public interface MetroService {
 
     AjaxResult metroCheckin();
 
+    AjaxResult searchMetro();
+
 }

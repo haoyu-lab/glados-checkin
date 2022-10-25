@@ -35,6 +35,18 @@ public class Metror {
     @TableField("METRO_TIME")
     private String metroTime;
 
+    /** 刷新token */
+    @TableField("REFRESH_TOKEN")
+    private String refreshToken;
+
+    /** 预约抢票时间 */
+    @TableField("LINE_NAME")
+    private String lineName;
+
+    /** 刷新token */
+    @TableField("STATION_NAME")
+    private String stationName;
+
 //    /**
 //     * 今天是否需要抢票
 //     */

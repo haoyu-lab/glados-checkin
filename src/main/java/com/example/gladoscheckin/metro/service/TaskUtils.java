@@ -17,8 +17,11 @@ import com.example.gladoscheckin.metro.Metror;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 
 @Component
 @Slf4j
@@ -54,7 +57,7 @@ public class TaskUtils {
         DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"),DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
         if(tokenRxpireTime.isBefore(startTime)){
-            log.info("{}：您的token已过期，请尽快修改！" + metror.getName()+ " " + metror.getPhone());
+            log.info("{}：您的token已过期，请尽快修改！" , metror.getName()+ " " + metror.getPhone());
             String emailMessage = "您的token已过期，请尽快联系管理员修改！";
             String emailHeader = "地铁预约失败！！！";
             /** 此处需添加微信通知 */
@@ -62,7 +65,7 @@ public class TaskUtils {
 
             return false;
         }else if (tokenRxpireTime.isBefore(reservationTime)){
-            log.info("{}：您的token将在一天后过期，请尽快修改！" + metror.getName());
+            log.info("{}：您的token将在一天后过期，请尽快修改！" , metror.getName());
             System.out.println("您的token将在一天后过期，请尽快修改！");
             String emailMessage = "您的token将在一天后过期，请尽快联系管理员修改！";
             String emailHeader = "token到期提醒！！";
@@ -72,12 +75,10 @@ public class TaskUtils {
 
             return true;
         }else {
-            log.info("{}：token检查完成，未过期！" + metror.getName());
-            System.out.println("token检查完成，未过期！");
+            log.info("{}：token检查完成，未过期！" , metror.getName());
 
             return true;
         }
-//        System.out.println("Token过期时间：" + tokenRxpireTime);
     }
 
     public void startReservation(Metror metror) throws Exception {
@@ -95,15 +96,16 @@ public class TaskUtils {
             int count = 0;
 
             JSONObject param = new JSONObject();
-            param.set("lineName", "昌平线");
+            param.set("lineName", metror.getLineName());
             param.set("snapshotWeekOffset", 0);
-            param.set("stationName", "沙河站");
+            param.set("stationName", metror.getStationName());
             param.set("enterDate", DateUtil.tomorrow().toString("yyyyMMdd"));
             param.set("snapshotTimeSlot", "0630-0930");
             param.set("timeSlot", metror.getMetroTime());
 
-            log.info("{}：地铁预约参数组装完成" + metror.getName());
+            log.info("{}：地铁预约参数组装完成" , metror.getName());
 
+            String emailMessage = "";
             while (count < 5 && !flag){
                 System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次请求预约接口");
                 String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
@@ -122,6 +124,7 @@ public class TaskUtils {
                         if (null != res.get("balance")){
                             if ((Integer)res.get("balance") > 0){
                                 System.out.println(LocalDateTime.now() + ": 恭喜您第"+(count+1)+"次预约成功，明天不用排队啦！");
+                                emailMessage = "恭喜您地铁进站预约成功，地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "明天不用排队啦！\n 请移步 北京地铁预约出行 公众号查看";
                                 flag = true;
                             }
                         }else{
@@ -138,18 +141,18 @@ public class TaskUtils {
 
             /** 改为微信通知 */
             if (flag){
-                String emailMessage = "您的地铁预约抢票 成功！！！ 请移步 北京地铁预约出行 公众号查看";
-                String emailHeader = "地铁预约抢票服务通知";
+//                emailMessage = "您的地铁预约抢票 成功！！！ 请移步 北京地铁预约出行 公众号查看";
+                String emailHeader = "地铁预约抢票成功通知";
                 sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 //            MailUtils.sendResMail(email, "预约成功！","");
             }else{
-                String emailMessage = "您的地铁预约抢票 失败！！！(自动抢票时间为每日 12点、20点)，详情请联系管理员咨询";
-                String emailHeader = "地铁预约抢票服务通知";
+                emailMessage = "您的地铁预约抢票 失败！！！(自动抢票时间为每日 12点、20点)，详情请联系管理员咨询";
+                String emailHeader = "地铁预约抢票失败通知";
                 sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 //            MailUtils.sendResMail(email, "预约失败！","");
             }
 
-            log.info("{}：定时任务执行完成" + LocalDateTime.now());
+            log.info("{}：定时任务执行完成" , LocalDateTime.now());
         }
 
     }
@@ -186,41 +189,50 @@ public class TaskUtils {
         return false;
     }
 
+    public  long getNeedTime(int hour, int minute, int second, int addDay, int... args) {
+        Calendar calendar = Calendar.getInstance();
+        if (addDay != 0) {
+            calendar.add(Calendar.DATE, addDay);
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, second);
+        if (args.length == 1) {
+            calendar.set(Calendar.MILLISECOND, args[0]);
+        }
+        return calendar.getTimeInMillis();
+    }
 
 
     public static void main(String[] args) {
-//        String aToken = Base64.decodeStr("YTliYmQzNDQtMzE5Zi00NjcxLTgyYTMtZmQwNzY5YzA5ZTk2LDE2NjcyMDk2NzE1MDMsQ2QvcnlMYVZaZS8yQ0VQY2NlaFZ1NGM0U2MwPQ==");
-//        String[] aTokens = aToken.split(",");
-//        DateTime tokenTime = new DateTime(Long.parseLong(aTokens[1]));
-//        LocalDateTime tokenRxpireTime = LocalDateTimeUtil.of(tokenTime);
-//        DateTime dateTime = new DateTime(DateUtil.tomorrow().toString("yyyy-MM-dd") + " 23:59:59", DatePattern.NORM_DATETIME_FORMAT);
-//        LocalDateTime reservationTime = LocalDateTimeUtil.of(dateTime);
-//        DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"),DatePattern.NORM_DATETIME_FORMAT);
-//        LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
-//        if(tokenRxpireTime.isBefore(startTime)){
-//            System.out.println("您的token已过期，请尽快修改！");
-//        }else if (tokenRxpireTime.isBefore(reservationTime)){
-//            System.out.println("您的token将在一天后过期，请尽快修改！");
-////            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
-//            /** 此处需添加微信通知 */
-//        }else {
-//        System.out.println("token检查完成，未过期！");
-////            return true;
-//        }
-//        System.out.println("Token过期时间：" + tokenRxpireTime);
-        String resultStrs = HttpRequest.get("https://webapi.mybti.cn/AppointmentRecord/GetAppointmentList?status=0&lastid=")
-                .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
-                .header(Header.AUTHORIZATION, "ZTQwMTQzN2ItMjgwYS00YTFhLThiNGYtMTJjY2E5NzhkMzRkLDE2NjcyNjg5NDUyNTgsSHJLK3VsSFFza0trc3hKem1Hbkgya08vUFk0PQ==")
-                .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+
+        String url = "https://webapi.mybti.cn/User/GetNewToken?refreshtoken=" + "Y2IyZWZmMWI3NDUyNDljMmEyZTAyNzBmZTVkNTcwMzg=";
+        String resultStrs = HttpRequest.get(url)
+//                .header(":authority", "webapi.mybti.cn")
+//                .header(":method", "GET")
+                .header(Header.ACCEPT, "application/json, text/plain, */*")
+//                .header(Header.REFERER, "https://webui.mybti.cn/")
+//                .header(Header.CONNECTION, "keep-alive")
+//                .header(Header.ORIGIN, "https://webui.mybti.cn")
+//                .header(Header.HOST, "webapi.mybti.cn")
+//                .header(Header.ACCEPT_ENCODING, "gzip, deflate, br")
+//                .header(Header.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8")
+                .header("authorization", "YTliYmQzNDQtMzE5Zi00NjcxLTgyYTMtZmQwNzY5YzA5ZTk2LDE2NjczMjM1Mzk4MzcsL3JKc21DUGZyeXBHeUdyZEdvUEcrMVBTNGhJPQ==")
+                .header("user-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36")
+//                .header("sec-fetch-site", "same-site")
+//                .header("sec-fetch-mode", "cors")
+//                .header("sec-fetch-dest", "empty")
+//                .header("sec-ch-ua-platform", "Android")
+//                .header("sec-ch-ua-mobile", "?1")
+//                .header("sec-ch-ua", "\"Chromium\";v=\"106\", \"Google Chrome\";v=\"106\", \"Not;A=Brand\";v=\"99\"")
                 .timeout(10000)
                 .execute().body();
-        if(resultStrs != null){
-            JSONArray res = JSONUtil.parseArray(resultStrs);
-            if(res.size() > 0){
+        if(resultStrs != null) {
+            JSONObject res = JSONUtil.parseObj(resultStrs);
+            if (!ObjectUtils.isEmpty(res)) {
+                log.info(res.toString());
                 log.info("已预约，不可重复预约");
             }
-            log.info(res.toString());
-
         }
     }
 }

@@ -47,4 +47,11 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         }
         return AjaxResult.build2Success(true);
     }
+
+    @Override
+    public AjaxResult searchMetro() {
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        return AjaxResult.build2Success(metrors);
+    }
 }
