@@ -86,10 +86,10 @@ public class TaskUtils {
 //            return;
 //        }
 
-        //查询是否有预约记录，有则不预约
-        Boolean aBoolean = checkIsMetro(metror);
+        //查询是否有预约记录，有则不预约 （20221025，改成定时任务）
+//        Boolean aBoolean = checkIsMetro(metror);
 
-        if(!aBoolean){
+        if("false".equals(metror.getIsNeedOrder())){
             //无预约记录
 
             boolean flag = false;
@@ -158,8 +158,8 @@ public class TaskUtils {
     }
 
     public void start(Metror metror){
-        /** 检查token是否过期 */
         try{
+            /** 检查token是否过期 */
             Boolean aBoolean = checkToken(metror);
             if(aBoolean){
                 startReservation(metror);
@@ -182,10 +182,11 @@ public class TaskUtils {
             JSONArray res = JSONUtil.parseArray(resultStrs);
             if (res.size() > 0) {
                 log.info(res.toString());
-                log.info("已预约，不可重复预约");
+                log.info("{}：已预约，不可重复预约",metror.getName());
                 return true;
             }
         }
+        log.info("{}：待预约",metror.getName());
         return false;
     }
 

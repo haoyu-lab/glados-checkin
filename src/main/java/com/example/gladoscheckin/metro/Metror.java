@@ -47,6 +47,11 @@ public class Metror {
     @TableField("STATION_NAME")
     private String stationName;
 
+    /** 第二天是否需要预约 true false */
+    @TableField("IS_NEED_ORDER")
+    private String isNeedOrder;
+
+
 //    /**
 //     * 今天是否需要抢票
 //     */

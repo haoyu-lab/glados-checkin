@@ -54,4 +54,30 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         return AjaxResult.build2Success(metrors);
     }
+
+    @Override
+    public void refreshIsNeedOrder(){
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        metrors.forEach(e ->{
+            Boolean aBoolean = taskUtils.checkIsMetro(e);
+            if(aBoolean){
+                e.setIsNeedOrder("true");
+                baseMapper.updateById(e);
+            }else{
+                e.setIsNeedOrder("false");
+                baseMapper.updateById(e);
+            }
+        });
+    }
+
+    @Override
+    public void initializeIsNeedOrder(){
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        metrors.forEach(e -> {
+            e.setIsNeedOrder("false");
+        });
+        this.saveOrUpdateBatch(metrors);
+    }
 }

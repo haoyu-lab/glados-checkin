@@ -11,4 +11,7 @@ public interface MetroService {
 
     AjaxResult searchMetro();
 
+    void refreshIsNeedOrder();
+
+    void initializeIsNeedOrder();
 }

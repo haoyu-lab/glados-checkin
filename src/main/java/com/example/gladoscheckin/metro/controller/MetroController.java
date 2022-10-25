@@ -22,4 +22,14 @@ public class MetroController {
     public AjaxResult searchMetro(){
         return metroService.searchMetro();
     }
+
+    @GetMapping("/refreshIsNeedOrder")
+    public void refreshIsNeedOrder(){
+        metroService.refreshIsNeedOrder();
+    }
+
+    @GetMapping("/initializeIsNeedOrder")
+    public void initializeIsNeedOrder(){
+        metroService.initializeIsNeedOrder();
+    }
 }
