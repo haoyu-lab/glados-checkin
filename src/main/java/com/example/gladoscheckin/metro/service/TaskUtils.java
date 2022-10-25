@@ -89,6 +89,10 @@ public class TaskUtils {
         //查询是否有预约记录，有则不预约 （20221025，改成定时任务）
 //        Boolean aBoolean = checkIsMetro(metror);
 
+        if("true".equals(metror.getIsNeedOrder())){
+            log.info("{}：已预约，不可重复预约",metror.getName());
+        }
+
         if("false".equals(metror.getIsNeedOrder())){
             //无预约记录
 
