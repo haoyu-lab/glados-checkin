@@ -59,7 +59,7 @@ public class TaskUtils {
         if(tokenRxpireTime.isBefore(startTime)){
             log.info("{}：您的token已过期，请尽快修改！" , metror.getName()+ " " + metror.getPhone());
             String emailMessage = "您的token已过期，请尽快联系管理员修改！";
-            String emailHeader = "地铁预约失败！！！";
+            String emailHeader = "地铁预约抢票失败通知";
             /** 此处需添加微信通知 */
             sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 
@@ -68,7 +68,7 @@ public class TaskUtils {
             log.info("{}：您的token将在一天后过期，请尽快修改！" , metror.getName());
             System.out.println("您的token将在一天后过期，请尽快修改！");
             String emailMessage = "您的token将在一天后过期，请尽快联系管理员修改！";
-            String emailHeader = "token到期提醒！！";
+            String emailHeader = "地铁预约服务token到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
             /** 此处需添加微信通知 */
             sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
@@ -82,9 +82,6 @@ public class TaskUtils {
     }
 
     public void startReservation(Metror metror) throws Exception {
-//        if (!metror.getIsReservation()) {
-//            return;
-//        }
 
         //查询是否有预约记录，有则不预约 （20221025，改成定时任务）
 //        Boolean aBoolean = checkIsMetro(metror);
