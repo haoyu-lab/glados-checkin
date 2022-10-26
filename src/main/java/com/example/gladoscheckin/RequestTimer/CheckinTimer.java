@@ -30,11 +30,11 @@ public class CheckinTimer {
         log.info("每天12点,20点地铁预约抢票签到结束");
     }
 
-    @Scheduled(cron = "0 0 11,13 * * ?")
+    @Scheduled(cron = "0 58 11,19 * * ? ")
     public void refreshIsNeedOrder(){
-        log.info("每天11点,13点查询并更新是否有预约记录 开始");
+        log.info("每天11点58,13点58查询并更新是否有预约记录 开始");
         metroService.refreshIsNeedOrder();
-        log.info("每天11点,13点查询并更新是否有预约记录 结束");
+        log.info("每天11点58,13点58查询并更新是否有预约记录 结束");
     }
 
     @Scheduled(cron = "0 0 1 * * ?")
