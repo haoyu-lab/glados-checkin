@@ -44,6 +44,31 @@ public class SendWeChat {
         }
         return null;
     }
+
+    public String sendMessageHtml(String token, String title, String message)throws Exception{
+        String sendUrl = "http://www.pushplus.plus/send";
+        int socketTimeout = 120 * 1000;
+        int connectTimeout = 120 * 1000;
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        String qdResponse = null;
+
+        SendWeChatVO sendWeChatVO = new SendWeChatVO();
+        sendWeChatVO.setTemplate("html");
+        sendWeChatVO.setToken(token);
+        sendWeChatVO.setTitle(title);
+        sendWeChatVO.setContent(message);
+        String json = JSONObject.toJSONString(sendWeChatVO);
+        qdResponse = HttpUtil.sendPost(sendUrl, socketTimeout, connectTimeout, headers, null, json);
+        JSONObject jsonObject = JSONObject.parseObject(qdResponse);
+        int status = (int) jsonObject.get("code");
+        if(status == 200){
+            log.info("token用户："+token+",微信推送成功");
+        }else{
+            log.info("token用户："+token+",微信推送失败");
+        }
+        return null;
+    }
 }
 
 

@@ -2,9 +2,11 @@ package com.example.gladoscheckin.pushsend.controller;
 
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.Status;
+import com.example.gladoscheckin.pushsend.pojo.PushMessage;
 import com.example.gladoscheckin.pushsend.service.PushService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -24,5 +26,16 @@ public class PushController {
     public AjaxResult pushWeChat(String message){
         int count = pushService.pushWeChat(message);
         return AjaxResult.build(Status.SUCCESS,Status.SUCCESS_MSG,count);
+    }
+
+    @PostMapping("/pushWeChatHtml")
+    public AjaxResult pushWeChatHtml(@RequestBody PushMessage pushMessage){
+        try{
+            int count = pushService.pushWeChatHtml(pushMessage);
+            return AjaxResult.build(Status.SUCCESS,Status.SUCCESS_MSG,count);
+        }catch (Exception e){
+            return AjaxResult.build(Status.SERVER_ERROR, Status.SERVER_ERROR_MSG, e.getMessage());
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 package com.example.gladoscheckin.pushsend.service;
 
+import com.example.gladoscheckin.pushsend.pojo.PushMessage;
+
 /**
  * @author houhaoyu
  * @title: com.example.gladoscheckin.pushsend.service
@@ -11,4 +13,5 @@ public interface PushService {
 
     int pushWeChat(String message);
 
+    int pushWeChatHtml(PushMessage pushMessage) throws Exception;
 }
