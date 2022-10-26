@@ -66,7 +66,6 @@ public class TaskUtils {
             return false;
         }else if (tokenRxpireTime.isBefore(reservationTime)){
             log.info("{}：您的token将在一天后过期，请尽快修改！" , metror.getName());
-            System.out.println("您的token将在一天后过期，请尽快修改！");
             String emailMessage = "您的token将在一天后过期，请尽快联系管理员修改！";
             String emailHeader = "地铁预约服务token到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
@@ -108,7 +107,7 @@ public class TaskUtils {
 
             String emailMessage = "";
             while (count < 5 && !flag){
-                System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次请求预约接口");
+                log.info("{} : 第"+(count+1)+"次请求预约接口", metror.getName());
                 String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
                         .header(Header.AUTHORIZATION, metror.getMetroToken())
                         .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
@@ -117,25 +116,25 @@ public class TaskUtils {
                         .timeout(10000)
                         .execute().body();
 
-                System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次预约结果返回值为："+resultStr);
+                log.info("{}: 第"+(count+1)+"次预约结果返回值为："+resultStr, metror.getName());
                 if (resultStr != null){
                     JSONObject res;
                     try {
                         res = JSONUtil.parseObj(resultStr);
                         if (null != res.get("balance")){
                             if ((Integer)res.get("balance") > 0){
-                                System.out.println(LocalDateTime.now() + ": 恭喜您第"+(count+1)+"次预约成功，明天不用排队啦！");
-                                emailMessage = "恭喜您地铁进站预约成功，地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "明天不用排队啦！\n 请移步 北京地铁预约出行 公众号查看";
+                                log.info("{}: 恭喜您第"+(count+1)+"次预约成功，明天不用排队啦！", metror.getName());
+                                emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
                                 flag = true;
                             }
                         }else{
-                            System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次预约失败");
+                            log.info("{}: 第"+(count+1)+"次预约失败", metror.getName());
                         }
                     } catch (Exception e) {
-                        System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次预约失败；" + "原因：异常【" + e.getMessage() + "】");
+                        log.info("{}: 第"+(count+1)+"次预约失败；" + "原因：异常【" + e.getMessage() + "】", metror.getName());
                     }
                 }else{
-                    System.out.println(LocalDateTime.now() + ": 第"+(count+1)+"次预约失败");
+                    log.info("{}: 第"+(count+1)+"次预约失败", metror.getName());
                 }
                 count++;
             }
