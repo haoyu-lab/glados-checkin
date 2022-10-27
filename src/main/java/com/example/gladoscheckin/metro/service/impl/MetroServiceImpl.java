@@ -91,4 +91,9 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         });
         this.saveOrUpdateBatch(metrors);
     }
+
+    @Override
+    public void updateMetror(Metror metror) {
+        this.saveOrUpdate(metror);
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.gladoscheckin.metro.service;
 
 import com.example.gladoscheckin.common.AjaxResult;
+import com.example.gladoscheckin.metro.Metror;
 
 /**
  *
@@ -14,4 +15,6 @@ public interface MetroService {
     void refreshIsNeedOrder();
 
     void initializeIsNeedOrder();
+
+    void updateMetror(Metror metror);
 }

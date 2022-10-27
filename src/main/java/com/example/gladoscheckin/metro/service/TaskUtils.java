@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -29,6 +30,9 @@ public class TaskUtils {
 
     @Autowired
     private SendWeChat sendWeChat;
+
+    @Autowired
+    private MetroService metroService;
     /**
      * 检查今天是否需要抢票
      */
@@ -162,6 +166,11 @@ public class TaskUtils {
             /** 检查token是否过期 */
             Boolean aBoolean = checkToken(metror);
             if(aBoolean){
+                /** token没过期，直接预约 */
+                startReservation(metror);
+            }else {
+                /** 更新完token，再执行预约 */
+                refreshToken(metror);
                 startReservation(metror);
             }
         }catch (Exception e){
@@ -204,36 +213,62 @@ public class TaskUtils {
         return calendar.getTimeInMillis();
     }
 
+    /** 更新token */
+    public void refreshToken(Metror metror){
+        try{
+            String url = "https://webapi.mybti.cn/User/GetNewToken?refreshtoken=" + metror.getRefreshToken();
+            String resultStrs = HttpRequest.get(url)
+                    .header(Header.ACCEPT, "application/json, text/plain, */*")
+                    .header("authorization", metror.getMetroToken())
+                    .header("user-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36")
+                    .timeout(10000)
+                    .execute().body();
+            if(!StringUtils.isEmpty(resultStrs)) {
+                log.info(resultStrs);
+                if(!"exception, please check http header errcode.".equals(resultStrs)){
+                    JSONObject res = JSONUtil.parseObj(resultStrs);
+                    if (!ObjectUtils.isEmpty(res)) {
+                        log.info(res.toString());
+                        try{
+                            metror.setMetroToken((String) res.get("accesstoken"));
+                            metror.setRefreshToken((String) res.get("refreshtoken"));
+                            metroService.updateMetror(metror);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
 
         String url = "https://webapi.mybti.cn/User/GetNewToken?refreshtoken=" + "Y2IyZWZmMWI3NDUyNDljMmEyZTAyNzBmZTVkNTcwMzg=";
         String resultStrs = HttpRequest.get(url)
-//                .header(":authority", "webapi.mybti.cn")
-//                .header(":method", "GET")
                 .header(Header.ACCEPT, "application/json, text/plain, */*")
-//                .header(Header.REFERER, "https://webui.mybti.cn/")
-//                .header(Header.CONNECTION, "keep-alive")
-//                .header(Header.ORIGIN, "https://webui.mybti.cn")
-//                .header(Header.HOST, "webapi.mybti.cn")
-//                .header(Header.ACCEPT_ENCODING, "gzip, deflate, br")
-//                .header(Header.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8")
                 .header("authorization", "YTliYmQzNDQtMzE5Zi00NjcxLTgyYTMtZmQwNzY5YzA5ZTk2LDE2NjczMjM1Mzk4MzcsL3JKc21DUGZyeXBHeUdyZEdvUEcrMVBTNGhJPQ==")
                 .header("user-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36")
-//                .header("sec-fetch-site", "same-site")
-//                .header("sec-fetch-mode", "cors")
-//                .header("sec-fetch-dest", "empty")
-//                .header("sec-ch-ua-platform", "Android")
-//                .header("sec-ch-ua-mobile", "?1")
-//                .header("sec-ch-ua", "\"Chromium\";v=\"106\", \"Google Chrome\";v=\"106\", \"Not;A=Brand\";v=\"99\"")
                 .timeout(10000)
                 .execute().body();
-        if(resultStrs != null) {
-            JSONObject res = JSONUtil.parseObj(resultStrs);
-            if (!ObjectUtils.isEmpty(res)) {
-                log.info(res.toString());
-                log.info("已预约，不可重复预约");
+        if(!StringUtils.isEmpty(resultStrs)) {
+            log.info(resultStrs);
+            if(!"exception, please check http header errcode.".equals(resultStrs)){
+                JSONObject res = JSONUtil.parseObj(resultStrs);
+                if (!ObjectUtils.isEmpty(res)) {
+                    log.info(res.toString());
+                    try{
+                        String accesstoken = (String) res.get("accesstoken");
+                        String refreshtoken = (String) res.get("refreshtoken");
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
             }
+
         }
     }
 }
