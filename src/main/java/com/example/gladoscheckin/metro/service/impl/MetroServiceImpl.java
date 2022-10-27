@@ -9,21 +9,30 @@ import com.example.gladoscheckin.metro.Metror;
 import com.example.gladoscheckin.metro.mapper.MetrorMapper;
 import com.example.gladoscheckin.metro.service.MetroService;
 import com.example.gladoscheckin.metro.service.TaskUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 
 @Service
+@Slf4j
 public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implements MetroService {
 
     @Autowired
     TaskUtils taskUtils;
+    @Autowired
+    @Qualifier("asyncTaskExecutor")
+    private ThreadPoolTaskExecutor asyncTaskExecutor;
+
 
     @Override
     public AjaxResult metroCheckin() {
@@ -38,12 +47,14 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         Boolean isReservation = true;
         taskUtils.checkTomorrowIsHoliday(isReservation);
         if(isReservation){
+//            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
             metrors.forEach(e ->{
                 //发送通知
                 CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
                     taskUtils.start(e);
-                });
+                },asyncTaskExecutor);
             });
+
         }
         return AjaxResult.build2Success(true);
     }

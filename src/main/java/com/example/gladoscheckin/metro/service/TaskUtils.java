@@ -152,7 +152,7 @@ public class TaskUtils {
 //            MailUtils.sendResMail(email, "预约失败！","");
             }
 
-            log.info("{}：定时任务执行完成" , LocalDateTime.now());
+//            log.info("地铁预约抢票定时任务执行完成");
         }
 
     }
