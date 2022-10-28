@@ -14,6 +14,7 @@ import cn.hutool.json.JSONUtil;
 import com.example.gladoscheckin.common.SendWeChat;
 import com.example.gladoscheckin.metro.MetroVO;
 import com.example.gladoscheckin.metro.Metror;
+import com.example.gladoscheckin.metro.mapper.MetrorMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,11 +33,11 @@ public class TaskUtils {
     private SendWeChat sendWeChat;
 
     @Autowired
-    private MetroService metroService;
+    private MetrorMapper metrorMapper;
     /**
      * 检查今天是否需要抢票
      */
-    public void checkTomorrowIsHoliday(Boolean  isReservation){
+    public Boolean checkTomorrowIsHoliday(Boolean isReservation){
         String res = HttpUtil.get("https://tool.bitefu.net/jiari/?d=" + DateUtil.tomorrow().toString("yyyyMMdd"));
         log.info("检查一下明天是不是假期{}", res);
         if ("0".equals(res)){
@@ -46,6 +47,7 @@ public class TaskUtils {
             log.info("明个放假，不用抢票啦！！");
             isReservation = false;
         }
+        return isReservation;
     }
 
     /**
@@ -145,15 +147,12 @@ public class TaskUtils {
 
             /** 改为微信通知 */
             if (flag){
-//                emailMessage = "您的地铁预约抢票 成功！！！ 请移步 北京地铁预约出行 公众号查看";
                 String emailHeader = "地铁预约抢票成功通知";
                 sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
-//            MailUtils.sendResMail(email, "预约成功！","");
             }else{
                 emailMessage = "您的地铁预约抢票 失败！！！(自动抢票时间为每日 12点、20点)，详情请联系管理员咨询";
                 String emailHeader = "地铁预约抢票失败通知";
                 sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
-//            MailUtils.sendResMail(email, "预约失败！","");
             }
 
 //            log.info("地铁预约抢票定时任务执行完成");
@@ -170,8 +169,10 @@ public class TaskUtils {
                 startReservation(metror);
             }else {
                 /** 更新完token，再执行预约 */
-                refreshToken(metror);
-                startReservation(metror);
+                Metror metror1 = refreshToken(metror);
+                metrorMapper.updateById(metror1);
+
+                startReservation(metror1);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -214,7 +215,7 @@ public class TaskUtils {
     }
 
     /** 更新token */
-    public void refreshToken(Metror metror){
+    public Metror refreshToken(Metror metror){
         try{
             String url = "https://webapi.mybti.cn/User/GetNewToken?refreshtoken=" + metror.getRefreshToken();
             String resultStrs = HttpRequest.get(url)
@@ -232,7 +233,6 @@ public class TaskUtils {
                         try{
                             metror.setMetroToken((String) res.get("accesstoken"));
                             metror.setRefreshToken((String) res.get("refreshtoken"));
-                            metroService.updateMetror(metror);
                         }catch (Exception e){
                             e.printStackTrace();
                         }
@@ -243,6 +243,7 @@ public class TaskUtils {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return metror;
     }
 
     public static void main(String[] args) {

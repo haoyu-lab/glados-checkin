@@ -45,11 +45,10 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 
         /** 检查今天是否需要抢票 */
         Boolean isReservation = true;
-        taskUtils.checkTomorrowIsHoliday(isReservation);
+        isReservation = taskUtils.checkTomorrowIsHoliday(isReservation);
         if(isReservation){
 //            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
             metrors.forEach(e ->{
-                //发送通知
                 CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
                     taskUtils.start(e);
                 },asyncTaskExecutor);

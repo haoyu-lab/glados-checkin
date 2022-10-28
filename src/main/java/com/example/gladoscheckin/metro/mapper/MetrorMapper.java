@@ -2,6 +2,7 @@ package com.example.gladoscheckin.metro.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.gladoscheckin.metro.Metror;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author houhaoyu
@@ -10,5 +11,6 @@ import com.example.gladoscheckin.metro.Metror;
  * @description: TODO
  * @date 2022/10/2413:25
  */
+@Repository
 public interface MetrorMapper extends BaseMapper<Metror> {
 }
