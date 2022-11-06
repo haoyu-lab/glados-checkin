@@ -39,7 +39,7 @@ public class CheckinServiceImpl implements CheckinService {
 
         //从表中查询
         List<Power> powerList = powerService.selectPower();
-//        powerList = powerList.stream().filter(e -> e.getEmail().contains("187122")).collect(Collectors.toList());
+        powerList = powerList.stream().filter(e -> e.getEmail().contains("11034")).collect(Collectors.toList());
         powerList.stream().forEach(e ->{
             log.info("待发送用户：{}",e.getEmail());
 //            String email = e.getEmail();
@@ -63,23 +63,23 @@ public class CheckinServiceImpl implements CheckinService {
                 String qdMessage = (String) jsonObject.get("message");
                 if (status == 0) {
                     log.info("签到成功:{}", qdMessage);
-                    emailHeader = "glados签到成功！";
+                    emailHeader = "浩宇的VPN通知：签到成功！";
                 }
                 if (status == 1) {
                     if(qdMessage.equals("Can not Checkin with zero day membership")){
-                        emailHeader = "glados签到失败！";
+                        emailHeader = "浩宇的VPN通知：签到失败！";
                         log.info("签到失败:{}", qdMessage);
                     }else if(qdMessage.equals("Free users can not checkin, please upgrade to Basic/Pro plan")){
-                        emailHeader = "glados签到失败！";
+                        emailHeader = "浩宇的VPN通知：签到失败！";
                         log.info("签到失败:{}", qdMessage);
                     }else{
                         log.info("今日已签到:{}", qdMessage);
-                        emailHeader = "glados今日已经签到！";
+                        emailHeader = "浩宇的VPN通知：今日已经签到！";
                     }
                 }
                 if (status == -2) {
                     log.info("签到失败:{}", qdMessage);
-                    emailHeader = "glados签到失败！";
+                    emailHeader = "浩宇的VPN通知：签到失败！";
                 }
                 //调用glados"status"接口获取邮箱及剩余天数及剩余流量
                 String sendStatusUrl = "https://glados.one/api/user/status";
