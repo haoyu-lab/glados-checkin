@@ -10,6 +10,7 @@ import com.example.gladoscheckin.qd.pojo.Power;
 import com.example.gladoscheckin.qd.service.PowerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,21 +33,45 @@ public class PushServiceImpl implements PushService {
     private MetroService metroService;
 
     @Override
-    public int pushWeChat(String message) {
-        List<Power> powerList = powerService.selectPower();
-//        powerList = powerList.stream().filter(e -> e.getEmail().contains("11034")).collect(Collectors.toList());
-        message = "尊敬的用户您好！\n"+"       "+message+"\n        感谢您的使用！";
-//        message = "内容<br/><img src='https://s2.loli.net/2022/10/26/5spyUAtjJkhTDgC.jpg' />";
+    public int pushWeChat(PushMessage pushMessage) throws Exception{
+
+        String message = "尊敬的用户您好！\n"+"&nbsp;&nbsp;&nbsp;&nbsp;"+pushMessage.getMessage()+"\n &nbsp;&nbsp;&nbsp;&nbsp;感谢您的使用！";
         String finalMessage = message;
         AtomicInteger count = new AtomicInteger();
-        powerList.forEach(e ->{
-            try {
-                sendWeChat.sendMessage(e.getPushPlusToken(),"GlaDOS签到服务更新通知", finalMessage);
-                count.getAndIncrement();
-            } catch (Exception exception) {
-                exception.printStackTrace();
+        if("glados".equals(pushMessage.getService())){
+            List<Power> powerList = powerService.selectPower();
+            if(!StringUtils.isEmpty(pushMessage.getUser())){
+                powerList = powerList.stream().filter(e -> e.getEmail().contains(pushMessage.getUser())).collect(Collectors.toList());
             }
-        });
+            powerList.forEach(e ->{
+                try {
+                    sendWeChat.sendMessage(e.getPushPlusToken(),"GlaDOS签到服务更新通知", finalMessage);
+                    count.getAndIncrement();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            });
+        }else if("metro".equals(pushMessage.getService())){
+            //地铁预约服务通知
+            AjaxResult ajaxResult = metroService.searchMetro();
+            if(ajaxResult.getStatus() == 200){
+                List<Metror> metrors = (List<Metror>)ajaxResult.getBody();
+                if(!StringUtils.isEmpty(pushMessage.getUser())){
+                    metrors = metrors.stream().filter(e -> e.getPhone().contains(pushMessage.getUser())).collect(Collectors.toList());
+                }
+                metrors.forEach(e ->{
+                    try {
+                        sendWeChat.sendMessageHtml(e.getPushPlusToken(),"地铁预约服务通知", finalMessage);
+                        count.getAndIncrement();
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                });
+            }else{
+                throw new Exception();
+            }
+        }
+
         return count.get();
     }
 

@@ -11,7 +11,7 @@ import com.example.gladoscheckin.pushsend.pojo.PushMessage;
  */
 public interface PushService {
 
-    int pushWeChat(String message);
+    int pushWeChat(PushMessage pushMessage) throws Exception;
 
     int pushWeChatHtml(PushMessage pushMessage) throws Exception;
 }
