@@ -51,6 +51,13 @@ public class Metror {
     @TableField("IS_NEED_ORDER")
     private String isNeedOrder;
 
+    /**
+     * 是否有效 Y是 N否
+     */
+    @TableField("IS_VALID")
+    private String isVaild;
+
+
 
 //    /**
 //     * 今天是否需要抢票

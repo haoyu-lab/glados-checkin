@@ -18,4 +18,7 @@ public class PushMessage {
 
     /** 对应的服务 glados/metro */
     private String service;
+
+    /** 对应的用户（邮箱或电话） */
+    private String user;
 }

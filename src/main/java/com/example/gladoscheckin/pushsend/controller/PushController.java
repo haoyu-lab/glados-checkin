@@ -23,9 +23,13 @@ public class PushController {
     private PushService pushService;
 
     @PostMapping("/pushWeChat")
-    public AjaxResult pushWeChat(String message){
-        int count = pushService.pushWeChat(message);
-        return AjaxResult.build(Status.SUCCESS,Status.SUCCESS_MSG,count);
+    public AjaxResult pushWeChat(@RequestBody PushMessage pushMessage){
+        try{
+            int count = pushService.pushWeChat(pushMessage);
+            return AjaxResult.build(Status.SUCCESS,Status.SUCCESS_MSG,count);
+        }catch (Exception e){
+            return AjaxResult.build(Status.SERVER_ERROR, Status.SERVER_ERROR_MSG, e.getMessage());
+        }
     }
 
     @PostMapping("/pushWeChatHtml")

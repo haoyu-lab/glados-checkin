@@ -38,6 +38,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     public AjaxResult metroCheckin() {
         //查询数据
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         if(CollectionUtils.isEmpty(metrors)){
             return AjaxResult.build(Status.SERVER_ERROR,"无预约用户","无预约用户");
