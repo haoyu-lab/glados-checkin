@@ -35,7 +35,7 @@ public class PushServiceImpl implements PushService {
     @Override
     public int pushWeChat(PushMessage pushMessage) throws Exception{
 
-        String message = "尊敬的用户您好！\n"+"&nbsp;&nbsp;&nbsp;&nbsp;"+pushMessage.getMessage()+"\n &nbsp;&nbsp;&nbsp;&nbsp;感谢您的使用！";
+        String message = "尊敬的用户您好！\n"+"&nbsp;&nbsp;&nbsp;&nbsp;"+pushMessage.getMessage()+"\n 感谢您的使用！";
         String finalMessage = message;
         AtomicInteger count = new AtomicInteger();
         if("glados".equals(pushMessage.getService())){
