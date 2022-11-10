@@ -69,6 +69,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     @Override
     public void refreshIsNeedOrder(){
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         metrors.forEach(e ->{
             try {
@@ -90,6 +91,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     @Override
     public void initializeIsNeedOrder(){
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         metrors.forEach(e -> {
             e.setIsNeedOrder("false");

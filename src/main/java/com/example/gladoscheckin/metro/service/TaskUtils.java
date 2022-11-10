@@ -188,15 +188,20 @@ public class TaskUtils {
                 .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
                 .timeout(10000)
                 .execute().body();
-        if(resultStrs != null) {
+        if(resultStrs != null && resultStrs.startsWith("[")) {
             JSONArray res = JSONUtil.parseArray(resultStrs);
             if (res.size() > 0) {
                 log.info(res.toString());
                 log.info("{}：已预约，不可重复预约",metror.getName());
                 return true;
             }
+        }else if(resultStrs != null && resultStrs.startsWith("{")){
+//            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
+//            log.info(jsonObject.toString());
+            log.info("{}：token到期",metror.getName());
+        }else{
+            log.info("{}：待预约",metror.getName());
         }
-        log.info("{}：待预约",metror.getName());
         return false;
     }
 
