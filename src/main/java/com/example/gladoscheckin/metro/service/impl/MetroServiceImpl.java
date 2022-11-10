@@ -71,14 +71,19 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         metrors.forEach(e ->{
-            Boolean aBoolean = taskUtils.checkIsMetro(e);
-            if(aBoolean){
-                e.setIsNeedOrder("true");
-                baseMapper.updateById(e);
-            }else{
-                e.setIsNeedOrder("false");
-                baseMapper.updateById(e);
+            try {
+                Boolean aBoolean = taskUtils.checkIsMetro(e);
+                if(aBoolean){
+                    e.setIsNeedOrder("true");
+                    baseMapper.updateById(e);
+                }else{
+                    e.setIsNeedOrder("false");
+                    baseMapper.updateById(e);
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
             }
+
         });
     }
 
