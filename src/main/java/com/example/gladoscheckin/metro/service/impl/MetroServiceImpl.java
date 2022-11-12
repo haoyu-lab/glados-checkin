@@ -69,22 +69,29 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     @Override
     public void refreshIsNeedOrder(){
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         metrors.forEach(e ->{
-            Boolean aBoolean = taskUtils.checkIsMetro(e);
-            if(aBoolean){
-                e.setIsNeedOrder("true");
-                baseMapper.updateById(e);
-            }else{
-                e.setIsNeedOrder("false");
-                baseMapper.updateById(e);
+            try {
+                Boolean aBoolean = taskUtils.checkIsMetro(e);
+                if(aBoolean){
+                    e.setIsNeedOrder("true");
+                    baseMapper.updateById(e);
+                }else{
+                    e.setIsNeedOrder("false");
+                    baseMapper.updateById(e);
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
             }
+
         });
     }
 
     @Override
     public void initializeIsNeedOrder(){
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         metrors.forEach(e -> {
             e.setIsNeedOrder("false");
