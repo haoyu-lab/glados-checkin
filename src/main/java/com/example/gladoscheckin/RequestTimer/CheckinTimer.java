@@ -16,7 +16,7 @@ public class CheckinTimer {
     @Autowired
     MetroService metroService;
 
-    @Scheduled(cron = "0 0 5 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void checkin(){
         log.info("每天五点glados签到开始");
         checkinService.checkin();
