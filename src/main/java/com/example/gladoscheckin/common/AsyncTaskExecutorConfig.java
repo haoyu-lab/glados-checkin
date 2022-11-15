@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class AsyncTaskExecutorConfig {
     //阻塞队列
-    private static final int workQueue = 20;
+    private static final int workQueue = 0;
     //线程空闲后的存活时长
     private static final int keepAliveTime = 30;
     //Cpu核数
