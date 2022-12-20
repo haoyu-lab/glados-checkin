@@ -65,7 +65,7 @@ public class TaskUtils {
         if(tokenRxpireTime.isBefore(startTime)){
             log.info("{}：您的token已过期，请尽快修改！" , metror.getName()+ " " + metror.getPhone());
             String emailMessage = "您的token已过期，请尽快联系管理员修改！";
-            String emailHeader = "地铁预约抢票失败通知";
+            String emailHeader = "地铁预约服务授权到期提醒！！！";
             /** 此处需添加微信通知 */
             sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
 
@@ -73,7 +73,7 @@ public class TaskUtils {
         }else if (tokenRxpireTime.isBefore(reservationTime)){
             log.info("{}：您的token将在一天后过期，请尽快修改！" , metror.getName());
             String emailMessage = "您的token将在一天后过期，请尽快联系管理员修改！";
-            String emailHeader = "地铁预约服务token到期提醒！！";
+            String emailHeader = "地铁预约服务授权到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
             /** 此处需添加微信通知 */
             sendWeChat.sendMessage(metror.getPushPlusToken(),emailHeader,emailMessage);
@@ -167,12 +167,12 @@ public class TaskUtils {
             if(aBoolean){
                 /** token没过期，直接预约 */
                 startReservation(metror);
-            }else {
-                /** 更新完token，再执行预约 */
-                Metror metror1 = refreshToken(metror);
-                metrorMapper.updateById(metror1);
-
-                startReservation(metror1);
+//            }else {
+//                /** 更新完token，再执行预约 */
+//                Metror metror1 = refreshToken(metror);
+//                metrorMapper.updateById(metror1);
+//
+//                startReservation(metror1);
             }
         }catch (Exception e){
             e.printStackTrace();
