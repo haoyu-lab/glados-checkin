@@ -45,7 +45,7 @@ public class PushServiceImpl implements PushService {
             }
             powerList.forEach(e ->{
                 try {
-                    sendWeChat.sendMessage(e.getPushPlusToken(),"GlaDOS签到服务更新通知", finalMessage);
+                    sendWeChat.sendMessage(null, e.getEmail(), e.getPushPlusToken(),"GlaDOS签到服务更新通知", finalMessage);
                     count.getAndIncrement();
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -61,7 +61,7 @@ public class PushServiceImpl implements PushService {
                 }
                 metrors.forEach(e ->{
                     try {
-                        sendWeChat.sendMessageHtml(e.getPushPlusToken(),"地铁预约服务通知", finalMessage);
+                        sendWeChat.sendMessageHtml(e.getName(), null, e.getPushPlusToken(),"地铁预约服务通知", finalMessage);
                         count.getAndIncrement();
                     } catch (Exception exception) {
                         exception.printStackTrace();
@@ -84,7 +84,7 @@ public class PushServiceImpl implements PushService {
 //            powerList = powerList.stream().filter(e -> e.getEmail().contains("1103455")).collect(Collectors.toList());
             powerList.forEach(e ->{
                 try {
-                    sendWeChat.sendMessage(e.getPushPlusToken(),"GlaDOS签到服务通知", pushMessage.getMessage());
+                    sendWeChat.sendMessage(null, e.getEmail(), e.getPushPlusToken(),"GlaDOS签到服务通知", pushMessage.getMessage());
                     count.getAndIncrement();
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -98,7 +98,7 @@ public class PushServiceImpl implements PushService {
 //                metrors = metrors.stream().filter(e -> e.getPhone().contains("15135842296")).collect(Collectors.toList());
                 metrors.forEach(e ->{
                     try {
-                        sendWeChat.sendMessageHtml(e.getPushPlusToken(),"地铁预约服务通知", pushMessage.getMessage());
+                        sendWeChat.sendMessageHtml(e.getName(), null, e.getPushPlusToken(),"地铁预约服务通知", pushMessage.getMessage());
                         count.getAndIncrement();
                     } catch (Exception exception) {
                         exception.printStackTrace();
