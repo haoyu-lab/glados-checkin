@@ -27,7 +27,7 @@ public class AsyncTaskExecutorConfig {
     public ThreadPoolTaskExecutor  asyncTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setThreadNamePrefix("asyncTaskExecutor-");//线程前缀
-        threadPoolTaskExecutor.setCorePoolSize(30);//核心线程数
+        threadPoolTaskExecutor.setCorePoolSize(300);//核心线程数
         log.info("Cpu核数=={}",CPU_COUNT);
         log.info("应该设置的核心线程数=={}",corePoolSize);
         log.info("正在使用的核心线程数=={}",threadPoolTaskExecutor.getCorePoolSize());

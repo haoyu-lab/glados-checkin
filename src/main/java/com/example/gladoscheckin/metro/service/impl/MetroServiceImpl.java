@@ -119,6 +119,17 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         Boolean isReservation = true;
         isReservation = taskUtils.checkTomorrowIsHoliday(isReservation);
         if(isReservation){
+//            metrors.forEach(e ->{
+//                new Thread(()->{
+//                    log.info("用户：{}",e.getName());
+//                    try {
+//                        Thread.sleep(2000);
+//                    } catch (InterruptedException interruptedException) {
+//                        interruptedException.printStackTrace();
+//                    }
+//                }).start();
+//            });
+
 //            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
             metrors.forEach(e ->{
                 CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
