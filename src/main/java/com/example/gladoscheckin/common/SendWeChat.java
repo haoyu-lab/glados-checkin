@@ -42,7 +42,7 @@ public class SendWeChat {
             if(!StringUtils.isEmpty(name)){
                 log.info("用户：" + name + "token为："+ token + ",微信推送成功");
             }else if(!StringUtils.isEmpty(email)){
-                log.info("邮箱：" + name + "token为："+ token + ",微信推送成功");
+                log.info("邮箱：" + email + "token为："+ token + ",微信推送成功");
             }else{
                 log.info("用户token为："+ token + ",微信推送成功");
             }
@@ -50,7 +50,7 @@ public class SendWeChat {
             if(!StringUtils.isEmpty(name)){
                 log.info("用户：" + name + "token为："+ token + ",微信推送失败");
             }else if(!StringUtils.isEmpty(email)){
-                log.info("邮箱：" + name + "token为："+ token + ",微信推送失败");
+                log.info("邮箱：" + email + "token为："+ token + ",微信推送失败");
             }else{
                 log.info("用户token为："+ token + ",微信推送失败");
             }
@@ -79,7 +79,7 @@ public class SendWeChat {
             if(!StringUtils.isEmpty(name)){
                 log.info("用户：" + name + "token为："+ token + ",微信推送成功");
             }else if(!StringUtils.isEmpty(email)){
-                log.info("邮箱：" + name + "token为："+ token + ",微信推送成功");
+                log.info("邮箱：" + email + "token为："+ token + ",微信推送成功");
             }else{
                 log.info("用户token为："+ token + ",微信推送成功");
             }
@@ -87,7 +87,7 @@ public class SendWeChat {
             if(!StringUtils.isEmpty(name)){
                 log.info("用户：" + name + "token为："+ token + ",微信推送失败");
             }else if(!StringUtils.isEmpty(email)){
-                log.info("邮箱：" + name + "token为："+ token + ",微信推送失败");
+                log.info("邮箱：" + email + "token为："+ token + ",微信推送失败");
             }else{
                 log.info("用户token为："+ token + ",微信推送失败");
             }
