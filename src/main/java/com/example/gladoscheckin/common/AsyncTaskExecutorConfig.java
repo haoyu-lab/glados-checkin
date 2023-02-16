@@ -27,14 +27,14 @@ public class AsyncTaskExecutorConfig {
     public ThreadPoolTaskExecutor  asyncTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setThreadNamePrefix("asyncTaskExecutor-");//线程前缀
-        threadPoolTaskExecutor.setCorePoolSize(corePoolSize);//核心线程数
+        threadPoolTaskExecutor.setCorePoolSize(30);//核心线程数
         log.info("Cpu核数=={}",CPU_COUNT);
-        log.info("核心线程数=={}",corePoolSize);
+        log.info("应该设置的核心线程数=={}",corePoolSize);
+        log.info("正在使用的核心线程数=={}",threadPoolTaskExecutor.getCorePoolSize());
 //        threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);//最大线程数
-        threadPoolTaskExecutor.setMaxPoolSize(30);//最大线程数
         log.info("应该设置的最大线程数=={}",maxPoolSize);
         log.info("正在使用的最大线程数=={}",threadPoolTaskExecutor.getMaxPoolSize());
-        threadPoolTaskExecutor.setQueueCapacity(workQueue);//等待队列
+//        threadPoolTaskExecutor.setQueueCapacity(workQueue);//等待队列
         threadPoolTaskExecutor.setKeepAliveSeconds(keepAliveTime);//线程池维护线程所允许的空闲时间,单位为秒
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());// 线程池对拒绝任务(无线程可用)的处理策略
         threadPoolTaskExecutor.initialize();
