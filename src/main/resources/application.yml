@@ -42,6 +42,9 @@ spring:
         deny:
         reset-enable: false
         login-username: admin
+#  main:
+#    allow-circular-references: true
+
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://xxx:3306/glados?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
 #    username: xxx
@@ -59,9 +62,9 @@ logging:
           mapper: debug
 email:
   #发件人邮箱
-  myEmailAccount: 15135842296@163.com
+  myEmailAccount: xxx@163.com
   #发件人邮箱密码（授权码）
-  myEmailPassword: QXSHNPZZAQVVLRJW
+  myEmailPassword: XXX
   #收件人邮箱（此处配置无效，从接口中获取的邮箱）
   receiveMailAccount: xxx@qq.com
 
