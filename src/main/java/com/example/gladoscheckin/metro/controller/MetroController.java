@@ -17,6 +17,10 @@ public class MetroController {
     public AjaxResult metroCheckin(){
         return metroService.metroCheckin();
     }
+    @GetMapping("/metroCheckin1")
+    public AjaxResult metroCheckin1(){
+        return metroService.metroCheckin1();
+    }
 
     @GetMapping("/searchMetro")
     public AjaxResult searchMetro(){

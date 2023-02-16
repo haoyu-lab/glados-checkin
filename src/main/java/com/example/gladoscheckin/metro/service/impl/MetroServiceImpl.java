@@ -103,4 +103,36 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     public void updateMetror(Metror metror) {
         this.saveOrUpdate(metror);
     }
+
+    //该方法为测试多线程方法，不可用
+    @Override
+    public AjaxResult metroCheckin1() {
+        //查询数据
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        if(CollectionUtils.isEmpty(metrors)){
+            return AjaxResult.build(Status.SERVER_ERROR,"无预约用户","无预约用户");
+        }
+
+        /** 检查今天是否需要抢票 */
+        Boolean isReservation = true;
+        isReservation = taskUtils.checkTomorrowIsHoliday(isReservation);
+        if(isReservation){
+//            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
+            metrors.forEach(e ->{
+                CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+                    log.info("用户：{}",e.getName());
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
+//                    taskUtils.start(e);
+                },asyncTaskExecutor);
+            });
+
+        }
+        return AjaxResult.build2Success(true);
+    }
 }

@@ -9,6 +9,7 @@ import com.example.gladoscheckin.metro.Metror;
 public interface MetroService {
 
     AjaxResult metroCheckin();
+    AjaxResult metroCheckin1();
 
     AjaxResult searchMetro();
 
