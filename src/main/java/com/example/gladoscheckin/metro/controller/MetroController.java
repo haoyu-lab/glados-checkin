@@ -37,8 +37,8 @@ public class MetroController {
         metroService.initializeIsNeedOrder();
     }
 
-    @GetMapping("/getVlCode/{phone}")
-    public AjaxResult getVlCode(@PathVariable(name = "phone") String phone){
+    @GetMapping("/getVlCode")
+    public AjaxResult getVlCode(@RequestParam(name = "phone") String phone){
         return metroService.getVlCode(phone);
     }
 
