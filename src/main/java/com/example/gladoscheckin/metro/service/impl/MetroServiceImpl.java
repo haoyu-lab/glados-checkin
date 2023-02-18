@@ -1,5 +1,8 @@
 package com.example.gladoscheckin.metro.service.impl;
 
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.gladoscheckin.common.AjaxResult;
@@ -7,17 +10,21 @@ import com.example.gladoscheckin.common.Status;
 import com.example.gladoscheckin.metro.MetroVO;
 import com.example.gladoscheckin.metro.Metror;
 import com.example.gladoscheckin.metro.mapper.MetrorMapper;
+import com.example.gladoscheckin.metro.service.AESUtil;
 import com.example.gladoscheckin.metro.service.MetroService;
 import com.example.gladoscheckin.metro.service.TaskUtils;
+import com.example.gladoscheckin.pushsend.pojo.VICode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -102,6 +109,69 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     @Override
     public void updateMetror(Metror metror) {
         this.saveOrUpdate(metror);
+    }
+
+    @Override
+    public AjaxResult getVlCode(VICode viCode) {
+        if(StringUtils.isEmpty(viCode.getPhone())){
+            return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
+        }
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(Metror::getPhone,viCode.getPhone());
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        if(CollectionUtils.isEmpty(metrors)){
+            return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
+        }
+        long time = new Date().getTime();
+        //https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber=
+        String sha1 = AESUtil.getSha1(String.valueOf(time));
+        sha1 = AESUtil.getSha1(String.valueOf(time)+sha1);
+        String resultStrs = HttpRequest.get("https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber="+viCode.getPhone()+"&clientid=7e80a759-5bf3-4504-bfab-71572b025005&ts="+time+"&sign="+sha1)
+                .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+//                .header(Header.AUTHORIZATION, metror.getMetroToken())
+                .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                .timeout(10000)
+                .execute().body();
+
+        return AjaxResult.build2Success(true);
+    }
+
+    @Override
+    public AjaxResult metorLogin(VICode viCode) {
+        if(StringUtils.isEmpty(viCode.getPhone())){
+            return AjaxResult.build(Status.SERVER_ERROR,"无手机号","无手机号");
+        }
+        if(StringUtils.isEmpty(viCode.getVerifyCode())){
+            return AjaxResult.build(Status.SERVER_ERROR,"无验证码","无验证码");
+        }
+        JSONObject param = new JSONObject();
+        param.set("clientId", "7e80a759-5bf3-4504-bfab-71572b025005");
+        param.set("openId", "");
+        param.set("phoneNumber", viCode.getPhone());
+        param.set("verifyCode", viCode.getVerifyCode());
+        String resultStr = HttpRequest.post("https://webapi.mybti.cn/User/SignUp")
+//                .header(Header.AUTHORIZATION, metror.getMetroToken())
+                .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+                .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                .body(param.toString())
+                .timeout(10000)
+                .execute().body();
+        if(!StringUtils.isEmpty(resultStr) && resultStr.contains("{\"userInfo\"")){
+            com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(resultStr);
+            String token = (String)object.get("accesstoken");
+            QueryWrapper<Metror> queryWrapper = new QueryWrapper();
+            queryWrapper.lambda().eq(Metror::getPhone,viCode.getPhone());
+            List<Metror> metrors = baseMapper.selectList(queryWrapper);
+            if(CollectionUtils.isEmpty(metrors)){
+                return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
+            }else {
+                Metror metror = metrors.get(0);
+                metror.setMetroToken(token);
+                baseMapper.updateById(metror);
+            }
+            return AjaxResult.build2Success("token刷新成功");
+        }
+        return AjaxResult.build2ServerError("token刷新失败");
     }
 
     //该方法为测试多线程方法，不可用

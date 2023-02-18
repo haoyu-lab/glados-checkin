@@ -3,8 +3,11 @@ package com.example.gladoscheckin.metro.controller;
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.Status;
 import com.example.gladoscheckin.metro.service.MetroService;
+import com.example.gladoscheckin.pushsend.pojo.VICode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,5 +38,15 @@ public class MetroController {
     @GetMapping("/initializeIsNeedOrder")
     public void initializeIsNeedOrder(){
         metroService.initializeIsNeedOrder();
+    }
+
+    @PostMapping("/getVlCode")
+    public AjaxResult getVlCode(@RequestBody VICode viCode){
+        return metroService.getVlCode(viCode);
+    }
+
+    @PostMapping("/metorLogin")
+    public AjaxResult metorLogin(@RequestBody VICode viCode){
+        return metroService.metorLogin(viCode);
     }
 }

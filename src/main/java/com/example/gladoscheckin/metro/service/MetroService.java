@@ -2,6 +2,7 @@ package com.example.gladoscheckin.metro.service;
 
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.metro.Metror;
+import com.example.gladoscheckin.pushsend.pojo.VICode;
 
 /**
  *
@@ -18,4 +19,8 @@ public interface MetroService {
     void initializeIsNeedOrder();
 
     void updateMetror(Metror metror);
+
+    AjaxResult getVlCode(VICode viCode);
+
+    AjaxResult metorLogin(VICode viCode);
 }

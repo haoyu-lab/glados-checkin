@@ -192,13 +192,14 @@ public class TaskUtils {
         if (resultStrs != null && resultStrs.startsWith("[")) {
             JSONArray res = JSONUtil.parseArray(resultStrs);
             if (res.size() > 0) {
-                log.info(res.toString());
+                log.info("{}：" + res.toString(),metror.getName());
                 log.info("{}：已预约，不可重复预约", metror.getName());
                 return true;
             }
         } else if (resultStrs != null && resultStrs.startsWith("{")) {
 //            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
 //            log.info(jsonObject.toString());
+            log.info("{}：" + resultStrs.toString(),metror.getName());
             log.info("{}：token到期", metror.getName());
         } else {
             log.info("{}：待预约", metror.getName());
