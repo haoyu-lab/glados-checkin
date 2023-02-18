@@ -20,7 +20,7 @@ public interface MetroService {
 
     void updateMetror(Metror metror);
 
-    AjaxResult getVlCode(VICode viCode);
+    AjaxResult getVlCode(String phone);
 
     AjaxResult metorLogin(VICode viCode);
 }

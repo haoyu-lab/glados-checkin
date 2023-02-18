@@ -112,12 +112,12 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     }
 
     @Override
-    public AjaxResult getVlCode(VICode viCode) {
-        if(StringUtils.isEmpty(viCode.getPhone())){
+    public AjaxResult getVlCode(String phone) {
+        if(StringUtils.isEmpty(phone)){
             return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
         QueryWrapper<Metror> queryWrapper = new QueryWrapper();
-        queryWrapper.lambda().eq(Metror::getPhone,viCode.getPhone());
+        queryWrapper.lambda().eq(Metror::getPhone,phone);
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         if(CollectionUtils.isEmpty(metrors)){
             return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
@@ -126,7 +126,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         //https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber=
         String sha1 = AESUtil.getSha1(String.valueOf(time));
         sha1 = AESUtil.getSha1(String.valueOf(time)+sha1);
-        String resultStrs = HttpRequest.get("https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber="+viCode.getPhone()+"&clientid=7e80a759-5bf3-4504-bfab-71572b025005&ts="+time+"&sign="+sha1)
+        String resultStrs = HttpRequest.get("https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber="+phone+"&clientid=7e80a759-5bf3-4504-bfab-71572b025005&ts="+time+"&sign="+sha1)
                 .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
 //                .header(Header.AUTHORIZATION, metror.getMetroToken())
                 .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
