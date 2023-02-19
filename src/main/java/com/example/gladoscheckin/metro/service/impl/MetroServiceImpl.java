@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.gladoscheckin.common.AjaxResult;
+import com.example.gladoscheckin.common.SendWeChat;
 import com.example.gladoscheckin.common.Status;
 import com.example.gladoscheckin.metro.MetroVO;
 import com.example.gladoscheckin.metro.Metror;
@@ -23,7 +24,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -39,6 +43,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     @Autowired
     @Qualifier("asyncTaskExecutor")
     private ThreadPoolTaskExecutor asyncTaskExecutor;
+    @Autowired
+    private SendWeChat sendWeChat;
 
 
     @Override
@@ -137,12 +143,12 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     }
 
     @Override
-    public AjaxResult metorLogin(VICode viCode) {
+    public AjaxResult metorLogin(VICode viCode){
         if(StringUtils.isEmpty(viCode.getPhone())){
-            return AjaxResult.build(Status.SERVER_ERROR,"无手机号","无手机号");
+            return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
         if(StringUtils.isEmpty(viCode.getVerifyCode())){
-            return AjaxResult.build(Status.SERVER_ERROR,"无验证码","无验证码");
+            return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
         JSONObject param = new JSONObject();
         param.set("clientId", "7e80a759-5bf3-4504-bfab-71572b025005");
@@ -168,6 +174,23 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
                 baseMapper.updateById(metror);
+
+                try {
+                    //发送通知
+                    String emailHeader = "地铁预约授权刷新成功";
+                    String decode = new String(Base64.getDecoder().decode(token),"UTF-8");
+                    String[] split = decode.split(",");
+                    String time = split[1];
+                    Date date = new Date(Long.parseLong(time)-84600000L);//取到期日前一天
+                    //取到时间
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+                    String format = simpleDateFormat.format(date);
+                    String emailMessage = "恭喜您地铁预约授权成功，下次需授权时间为："+format;
+                    log.info("{}: 恭喜您地铁预约授权成功\n 下次需授权时间为：{}", metror.getName(),format);
+                    sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             return AjaxResult.build2Success("token刷新成功");
         }
@@ -216,4 +239,5 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         }
         return AjaxResult.build2Success(true);
     }
+
 }
