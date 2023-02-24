@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -59,13 +60,17 @@ public class TaskUtils {
         String[] aTokens = aToken.split(",");
         DateTime tokenTime = new DateTime(Long.parseLong(aTokens[1]));
         LocalDateTime tokenRxpireTime = LocalDateTimeUtil.of(tokenTime);
-        DateTime dateTime = new DateTime(DateUtil.tomorrow().toString("yyyy-MM-dd") + " 23:59:59", DatePattern.NORM_DATETIME_FORMAT);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        String time = simpleDateFormat.format(new Date(Long.parseLong(aTokens[1])));
+
+        DateTime dateTime = new DateTime(DateUtil.tomorrow().toString("yyyy-MM-dd") + " "+time, DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime reservationTime = LocalDateTimeUtil.of(dateTime);
         DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"), DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
         if (tokenRxpireTime.isBefore(startTime)) {
-            log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
-            String emailMessage = "您的token已过期，请尽快联系管理员修改！";
+            log.info("{}：您的token已过期，请尽快联系管理员修改！", metror.getName() + " " + metror.getPhone());
+            String emailMessage = "您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！";
             String emailHeader = "地铁预约服务授权到期提醒！！！";
             /** 此处需添加微信通知 */
             sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
@@ -255,32 +260,5 @@ public class TaskUtils {
             e.printStackTrace();
         }
         return metror;
-    }
-
-    public static void main(String[] args) {
-
-        String url = "https://webapi.mybti.cn/User/GetNewToken?refreshtoken=" + "Y2IyZWZmMWI3NDUyNDljMmEyZTAyNzBmZTVkNTcwMzg=";
-        String resultStrs = HttpRequest.get(url)
-                .header(Header.ACCEPT, "application/json, text/plain, */*")
-                .header("authorization", "YTliYmQzNDQtMzE5Zi00NjcxLTgyYTMtZmQwNzY5YzA5ZTk2LDE2NjczMjM1Mzk4MzcsL3JKc21DUGZyeXBHeUdyZEdvUEcrMVBTNGhJPQ==")
-                .header("user-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36")
-                .timeout(10000)
-                .execute().body();
-        if (!StringUtils.isEmpty(resultStrs)) {
-            log.info(resultStrs);
-            if (!"exception, please check http header errcode.".equals(resultStrs)) {
-                JSONObject res = JSONUtil.parseObj(resultStrs);
-                if (!ObjectUtils.isEmpty(res)) {
-                    log.info(res.toString());
-                    try {
-                        String accesstoken = (String) res.get("accesstoken");
-                        String refreshtoken = (String) res.get("refreshtoken");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }
     }
 }
