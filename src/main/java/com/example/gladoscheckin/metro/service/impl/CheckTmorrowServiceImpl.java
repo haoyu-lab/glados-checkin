@@ -42,10 +42,8 @@ public class CheckTmorrowServiceImpl  extends ServiceImpl<CheckTmorrowMapper, Ch
         if(CollectionUtils.isEmpty(checkTmorrows)){
 
             if (isReservation) {
-                log.info("嘤嘤嘤明天要上班，还是需要抢票滴！！");
                 checkTmorrow = CheckTmorrow.builder().tomorrowIsFlag("Y").build();
             } else {
-                log.info("明个放假，不用抢票啦！！");
                 checkTmorrow = CheckTmorrow.builder().tomorrowIsFlag("N").build();
             }
             baseMapper.insert(checkTmorrow);
