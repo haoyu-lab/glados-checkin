@@ -119,38 +119,46 @@ public class TaskUtils {
 
             String emailMessage = "";
             while (count < 5 && !flag) {
-                log.info("{} : 第" + (count + 1) + "次请求预约接口", metror.getName());
-                String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
-                        .header(Header.AUTHORIZATION, metror.getMetroToken())
-                        .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
-                        .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
-                        .body(param.toString())
-                        .timeout(4000)
-                        .execute().body();
+                try{
+                    log.info("{} : 第" + (count + 1) + "次请求预约接口", metror.getName());
+                    String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
+                            .header(Header.AUTHORIZATION, metror.getMetroToken())
+                            .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+                            .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                            .body(param.toString())
+                            .timeout(8000)
+                            .execute().body();
 
-                log.info("{}: 第" + (count + 1) + "次预约结果返回值为：" + resultStr, metror.getName());
-                if (resultStr != null) {
-                    JSONObject res;
-                    try {
-                        res = JSONUtil.parseObj(resultStr);
-                        if (null != res.get("balance")) {
-                            if ((Integer) res.get("balance") > 0) {
-                                log.info("{}: 恭喜您第" + (count + 1) + "次预约成功，明天不用排队啦！", metror.getName());
-                                emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
-                                flag = true;
-                            }else{
+                    log.info("{}: 第" + (count + 1) + "次预约结果返回值为：" + resultStr, metror.getName());
+                    if (resultStr != null) {
+                        JSONObject res;
+                        try {
+                            res = JSONUtil.parseObj(resultStr);
+                            if (null != res.get("balance")) {
+                                if ((Integer) res.get("balance") > 0) {
+                                    log.info("{}: 恭喜您第" + (count + 1) + "次预约成功，明天不用排队啦！", metror.getName());
+                                    emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+                                    flag = true;
+                                }else{
+                                    log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
+                                }
+                            } else {
                                 log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
                             }
-                        } else {
-                            log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
+                        } catch (Exception e) {
+                            log.info("{}: 第" + (count + 1) + "次预约失败；" + "原因：异常【" + e.getMessage() + "】", metror.getName());
                         }
-                    } catch (Exception e) {
-                        log.info("{}: 第" + (count + 1) + "次预约失败；" + "原因：异常【" + e.getMessage() + "】", metror.getName());
+                    } else {
+                        log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
                     }
-                } else {
-                    log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    log.error(e.getMessage());
+                }finally {
+                    count++;
                 }
-                count++;
+
             }
 
             /** 改为微信通知 */
