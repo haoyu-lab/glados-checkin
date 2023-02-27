@@ -39,17 +39,16 @@ public class TaskUtils {
     /**
      * 检查今天是否需要抢票
      */
-    public Boolean checkTomorrowIsHoliday(Boolean isReservation) {
+    public Boolean checkTomorrowIsHoliday() {
         String res = HttpUtil.get("https://tool.bitefu.net/jiari/?d=" + DateUtil.tomorrow().toString("yyyyMMdd"));
         log.info("检查一下明天是不是假期{}", res);
         if ("0".equals(res)) {
             log.info("嘤嘤嘤明天要上班，还是需要抢票滴！！");
-            isReservation = true;
+            return true;
         } else {
             log.info("明个放假，不用抢票啦！！");
-            isReservation = false;
+            return false;
         }
-        return isReservation;
     }
 
     /**

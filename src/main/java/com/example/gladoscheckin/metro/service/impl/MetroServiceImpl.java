@@ -8,10 +8,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.SendWeChat;
 import com.example.gladoscheckin.common.Status;
+import com.example.gladoscheckin.metro.CheckTmorrow;
 import com.example.gladoscheckin.metro.MetroVO;
 import com.example.gladoscheckin.metro.Metror;
 import com.example.gladoscheckin.metro.mapper.MetrorMapper;
 import com.example.gladoscheckin.metro.service.AESUtil;
+import com.example.gladoscheckin.metro.service.CheckTmorrowService;
 import com.example.gladoscheckin.metro.service.MetroService;
 import com.example.gladoscheckin.metro.service.TaskUtils;
 import com.example.gladoscheckin.pushsend.pojo.VICode;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -45,6 +48,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     private ThreadPoolTaskExecutor asyncTaskExecutor;
     @Autowired
     private SendWeChat sendWeChat;
+    @Autowired
+    private CheckTmorrowService checkTmorrowService;
 
 
     @Override
@@ -58,8 +63,19 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         }
 
         /** 检查今天是否需要抢票 */
-        Boolean isReservation = true;
-        isReservation = taskUtils.checkTomorrowIsHoliday(isReservation);
+        CheckTmorrow checkTmorrow = checkTmorrowService.getCheckTmorrow();
+        Boolean isReservation = null;
+        if(!ObjectUtils.isEmpty(checkTmorrow)){
+            String flag = checkTmorrow.getTomorrowIsFlag();
+            if("Y".equals(flag)){
+                isReservation = true;
+            }else{
+                isReservation = false;
+            }
+        }else{
+            isReservation = taskUtils.checkTomorrowIsHoliday();
+        }
+
         if(isReservation){
 //            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
             metrors.forEach(e ->{
@@ -209,8 +225,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         }
 
         /** 检查今天是否需要抢票 */
-        Boolean isReservation = true;
-        isReservation = taskUtils.checkTomorrowIsHoliday(isReservation);
+        Boolean isReservation = taskUtils.checkTomorrowIsHoliday();
         if(isReservation){
 //            metrors.forEach(e ->{
 //                new Thread(()->{
