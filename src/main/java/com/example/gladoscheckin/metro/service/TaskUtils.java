@@ -177,17 +177,16 @@ public class TaskUtils {
 
     public void start(Metror metror) {
         try {
+            Boolean aBoolean = false;
             /** 检查token是否过期 */
-            Boolean aBoolean = checkToken(metror);
+            if(!StringUtils.isEmpty(metror.getTokenFlag()) && "Y".equals(metror.getTokenFlag())){
+                aBoolean = true;
+            }else if (StringUtils.isEmpty(metror.getTokenFlag())){
+                aBoolean = checkToken(metror);
+            }
             if (aBoolean) {
                 /** token没过期，直接预约 */
                 startReservation(metror);
-//            }else {
-//                /** 更新完token，再执行预约 */
-//                Metror metror1 = refreshToken(metror);
-//                metrorMapper.updateById(metror1);
-//
-//                startReservation(metror1);
             }
         } catch (Exception e) {
             e.printStackTrace();

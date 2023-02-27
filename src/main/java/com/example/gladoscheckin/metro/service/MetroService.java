@@ -23,4 +23,6 @@ public interface MetroService {
     AjaxResult getVlCode(String phone);
 
     AjaxResult metorLogin(VICode viCode);
+
+    void updateTokenFlag();
 }

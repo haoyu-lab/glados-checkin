@@ -213,6 +213,30 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         return AjaxResult.build2ServerError("token刷新失败");
     }
 
+    @Override
+    public void updateTokenFlag() {
+        //查询数据
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+
+        //先查询token是否有效
+        metrors.forEach(e->{
+            try {
+                Boolean tokenFlag = taskUtils.checkToken(e);
+                if(tokenFlag){
+                    e.setTokenFlag("Y");
+                }else{
+                    e.setTokenFlag("N");
+                }
+                baseMapper.updateById(e);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        });
+
+    }
+
     //该方法为测试多线程方法，不可用
     @Override
     public AjaxResult metroCheckin1() {

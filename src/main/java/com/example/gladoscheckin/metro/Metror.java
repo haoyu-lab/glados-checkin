@@ -57,7 +57,11 @@ public class Metror {
     @TableField("IS_VALID")
     private String isVaild;
 
-
+    /**
+     * token是否有效 Y是 N否
+     */
+    @TableField("TOKEN_FLAG")
+    private String tokenFlag;
 
 //    /**
 //     * 今天是否需要抢票
