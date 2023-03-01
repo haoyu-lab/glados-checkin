@@ -33,7 +33,7 @@ public class CheckinTimer {
         log.info("每天12点,20点地铁预约抢票签到结束");
     }
 
-    @Scheduled(cron = "0 58 11,19 * * ? ")
+    @Scheduled(cron = "0 58 11,19 * * ?")
     public void refreshIsNeedOrder(){
         log.info("每天11点58,19点58查询并更新是否有预约记录 开始");
         metroService.refreshIsNeedOrder();
@@ -47,14 +47,14 @@ public class CheckinTimer {
         log.info("每天凌晨1点刷新是否预约记录字段 结束");
     }
 
-    @Scheduled(cron = "0 0 11 * * ? ")
+    @Scheduled(cron = "0 0 11 * * ?")
     public void checkTmorrow(){
         log.info("每天11点检查今天是否需要抢票 开始");
         checkTmorrowService.updateCheckTmorrow();
         log.info("每天11点检查今天是否需要抢票 结束");
     }
 
-    @Scheduled(cron = "0 45 11 * * ? ")
+    @Scheduled(cron = "0 45 11 * * ?")
     public void checkTokenFlag(){
         log.info("每天十一点四十五修改用户token字段并推送消息， 开始");
         metroService.updateTokenFlag();

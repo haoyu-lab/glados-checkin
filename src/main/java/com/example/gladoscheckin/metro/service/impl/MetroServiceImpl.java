@@ -189,6 +189,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             }else {
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
+                metror.setTokenFlag("Y");
                 baseMapper.updateById(metror);
 
                 try {
