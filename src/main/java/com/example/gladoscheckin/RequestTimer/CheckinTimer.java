@@ -26,11 +26,11 @@ public class CheckinTimer {
         log.info("每天五点glados签到结束");
     }
 
-    @Scheduled(cron = "0 0 12,20 * * ?")
+    @Scheduled(cron = "1 0 12,20 * * ?")
     public void taskMetro(){
-        log.info("每天12点,20点地铁预约抢票签到开始");
+        log.info("每天12点01分,20点01分地铁预约抢票签到开始");
         metroService.metroCheckin();
-        log.info("每天12点,20点地铁预约抢票签到结束");
+        log.info("每天12点01分,20点01分地铁预约抢票签到结束");
     }
 
     @Scheduled(cron = "0 58 11,19 * * ?")
