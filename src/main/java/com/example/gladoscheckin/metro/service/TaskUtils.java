@@ -225,6 +225,7 @@ public class TaskUtils {
 //            log.info(jsonObject.toString());
             log.info("{}：" + resultStrs.toString(),metror.getName());
             log.info("{}：token到期", metror.getName());
+            return null;
         } else {
             log.info("{}：待预约", metror.getName());
         }
