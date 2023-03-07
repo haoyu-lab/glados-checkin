@@ -213,13 +213,15 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                //是否需要修改数据
+                ResponseVO build = ResponseVO.builder()
+                        .message("授权刷新成功，是否需要修改预约信息？").build();
+                BeanUtils.copyProperties(metror,build);
+                build.setMetroToken(token);
+                return AjaxResult.build2Success(build);
             }
-            //是否需要修改数据
-            ResponseVO build = ResponseVO.builder()
-                    .metroToken(token)
-                    .phone(viCode.getPhone())
-                    .message("授权刷新成功，是否需要修改预约信息？").build();
-            return AjaxResult.build2Success(build);
+
 //            return AjaxResult.build2Success("token刷新成功");
         }else{
             if(CollectionUtils.isEmpty(metrors)){
