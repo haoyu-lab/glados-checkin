@@ -54,7 +54,7 @@ public class CheckinTimer {
         log.info("每天11点检查今天是否需要抢票 结束");
     }
 
-    @Scheduled(cron = "0 45 11 * * ?")
+    @Scheduled(cron = "0 45 11,19 * * ?")
     public void checkTokenFlag(){
         log.info("每天十一点四十五修改用户token字段并推送消息， 开始");
         metroService.updateTokenFlag();

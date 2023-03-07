@@ -144,7 +144,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if(CollectionUtils.isEmpty(metrors)){
             return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
         }
-        long time = new Date().getTime();
+        long time = System.currentTimeMillis();
         //https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber=
         String sha1 = AESUtil.getSha1(String.valueOf(time));
         sha1 = AESUtil.getSha1(String.valueOf(time)+sha1);
