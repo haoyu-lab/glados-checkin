@@ -284,15 +284,17 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             Metror metror = metrors.get(0);
             BeanUtils.copyProperties(requestVO,metror);
             baseMapper.updateById(metror);
+            return AjaxResult.build2Success("修改成功！！！");
         }else{
             Metror metror = new Metror();
             BeanUtils.copyProperties(requestVO,metror);
             metror.setIsNeedOrder("false");
             metror.setTokenFlag("Y");
             baseMapper.insert(metror);
+            return AjaxResult.build2Success("注册成功！！！");
         }
 
-        return AjaxResult.build2Success("注册成功！！！");
+
     }
 
     //该方法为测试多线程方法，不可用
