@@ -102,11 +102,12 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         metrors.forEach(e ->{
             try {
                 Boolean aBoolean = taskUtils.checkIsMetro(e);
-                if(aBoolean){
-                    e.setIsNeedOrder("true");
-                    baseMapper.updateById(e);
-                }else{
-                    e.setIsNeedOrder("false");
+                if(!ObjectUtils.isEmpty(aBoolean)){
+                    if(aBoolean){
+                        e.setIsNeedOrder("true");
+                    }else{
+                        e.setIsNeedOrder("false");
+                    }
                     baseMapper.updateById(e);
                 }
             }catch (Exception ex){
