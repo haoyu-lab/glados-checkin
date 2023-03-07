@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.SendWeChat;
 import com.example.gladoscheckin.common.Status;
-import com.example.gladoscheckin.metro.CheckTmorrow;
-import com.example.gladoscheckin.metro.MetroVO;
-import com.example.gladoscheckin.metro.Metror;
+import com.example.gladoscheckin.metro.*;
 import com.example.gladoscheckin.metro.mapper.MetrorMapper;
 import com.example.gladoscheckin.metro.service.AESUtil;
 import com.example.gladoscheckin.metro.service.CheckTmorrowService;
@@ -18,6 +16,7 @@ import com.example.gladoscheckin.metro.service.MetroService;
 import com.example.gladoscheckin.metro.service.TaskUtils;
 import com.example.gladoscheckin.pushsend.pojo.VICode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -141,9 +140,9 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         QueryWrapper<Metror> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(Metror::getPhone,phone);
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
-        if(CollectionUtils.isEmpty(metrors)){
-            return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
-        }
+//        if(CollectionUtils.isEmpty(metrors)){
+//            return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
+//        }
         long time = System.currentTimeMillis();
         //https://webapi.mybti.cn/User/SendVerifyCode?phoneNumber=
         String sha1 = AESUtil.getSha1(String.valueOf(time));
@@ -186,7 +185,12 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(resultStr);
             String token = (String)object.get("accesstoken");
             if(CollectionUtils.isEmpty(metrors)){
-                return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
+                //说明未注册，需要进行注册
+                ResponseVO build = ResponseVO.builder()
+                        .metroToken(token)
+                        .phone(viCode.getPhone())
+                        .message("该用户未注册，是否进行注册？").build();
+                return AjaxResult.build(Status.UNLOGIN_USER,"用户未注册",build);
             }else {
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
@@ -210,7 +214,13 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     e.printStackTrace();
                 }
             }
-            return AjaxResult.build2Success("token刷新成功");
+            //是否需要修改数据
+            ResponseVO build = ResponseVO.builder()
+                    .metroToken(token)
+                    .phone(viCode.getPhone())
+                    .message("授权刷新成功，是否需要修改预约信息？").build();
+            return AjaxResult.build2Success(build);
+//            return AjaxResult.build2Success("token刷新成功");
         }else{
             if(CollectionUtils.isEmpty(metrors)){
                 return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
@@ -241,6 +251,48 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             }
         });
 
+    }
+
+    @Override
+    public AjaxResult insertOrUpdateMetor(RequestVO requestVO) {
+        if(StringUtils.isEmpty(requestVO.getMetroToken())){
+            return AjaxResult.build2ServerError("预约token不可为空");
+        }
+        if(StringUtils.isEmpty(requestVO.getPhone())){
+            return AjaxResult.build2ServerError("手机号不可为空");
+        }
+        if(StringUtils.isEmpty(requestVO.getMetroTime())){
+            return AjaxResult.build2ServerError("预约时间段不可为空");
+        }
+        if(StringUtils.isEmpty(requestVO.getName())){
+            return AjaxResult.build2ServerError("姓名/昵称不可为空");
+        }
+        if(StringUtils.isEmpty(requestVO.getLineName())){
+            return AjaxResult.build2ServerError("预约地铁线路不可为空");
+        }
+        if(StringUtils.isEmpty(requestVO.getStationName())){
+            return AjaxResult.build2ServerError("预约地铁站名称不可为空");
+        }
+        if(StringUtils.isEmpty(requestVO.getIsVaild())){
+            return AjaxResult.build2ServerError("是否开启预约不可为空");
+        }
+        //查库
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(Metror::getPhone,requestVO.getPhone());
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        if(!CollectionUtils.isEmpty(metrors)){
+            Metror metror = metrors.get(0);
+            BeanUtils.copyProperties(requestVO,metror);
+            baseMapper.updateById(metror);
+        }else{
+            Metror metror = new Metror();
+            BeanUtils.copyProperties(requestVO,metror);
+            metror.setIsNeedOrder("false");
+            metror.setTokenFlag("Y");
+            baseMapper.insert(metror);
+        }
+
+        return AjaxResult.build2Success("注册成功！！！");
     }
 
     //该方法为测试多线程方法，不可用

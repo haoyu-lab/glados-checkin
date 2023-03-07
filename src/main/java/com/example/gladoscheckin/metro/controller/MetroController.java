@@ -2,6 +2,7 @@ package com.example.gladoscheckin.metro.controller;
 
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.Status;
+import com.example.gladoscheckin.metro.RequestVO;
 import com.example.gladoscheckin.metro.service.MetroService;
 import com.example.gladoscheckin.pushsend.pojo.VICode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +46,11 @@ public class MetroController {
     @PostMapping("/metorLogin")
     public AjaxResult metorLogin(@RequestBody VICode viCode){
         return metroService.metorLogin(viCode);
+    }
+
+    @PostMapping("/insertOrUpdateMetor")
+    public AjaxResult insertOrUpdateMetor(@RequestBody RequestVO requestVO){
+        return metroService.insertOrUpdateMetor(requestVO);
+
     }
 }

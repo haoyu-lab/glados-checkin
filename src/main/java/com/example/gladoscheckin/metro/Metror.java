@@ -39,11 +39,11 @@ public class Metror {
     @TableField("REFRESH_TOKEN")
     private String refreshToken;
 
-    /** 预约抢票时间 */
+    /** 地铁线路 */
     @TableField("LINE_NAME")
     private String lineName;
 
-    /** 刷新token */
+    /** 地铁站名称 */
     @TableField("STATION_NAME")
     private String stationName;
 
