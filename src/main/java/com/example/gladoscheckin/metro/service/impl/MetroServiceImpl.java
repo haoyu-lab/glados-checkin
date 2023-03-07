@@ -52,7 +52,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 
 
     @Override
-    public AjaxResult metroCheckin() {
+    public AjaxResult metroCheckin() throws Exception{
         //查询数据
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
@@ -60,7 +60,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if(CollectionUtils.isEmpty(metrors)){
             return AjaxResult.build(Status.SERVER_ERROR,"无预约用户","无预约用户");
         }
-
+        //睡眠0.5秒
+        Thread.sleep(500);
         /** 检查今天是否需要抢票 */
         CheckTmorrow checkTmorrow = checkTmorrowService.getCheckTmorrow();
         Boolean isReservation = null;

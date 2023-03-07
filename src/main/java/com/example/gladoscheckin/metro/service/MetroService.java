@@ -10,7 +10,7 @@ import com.example.gladoscheckin.pushsend.pojo.VICode;
  */
 public interface MetroService {
 
-    AjaxResult metroCheckin();
+    AjaxResult metroCheckin() throws Exception;
     AjaxResult metroCheckin1();
 
     AjaxResult searchMetro();

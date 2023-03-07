@@ -15,7 +15,7 @@ public class MetroController {
     MetroService metroService;
 
     @GetMapping("/metroCheckin")
-    public AjaxResult metroCheckin(){
+    public AjaxResult metroCheckin() throws Exception{
         return metroService.metroCheckin();
     }
     @GetMapping("/metroCheckin1")
