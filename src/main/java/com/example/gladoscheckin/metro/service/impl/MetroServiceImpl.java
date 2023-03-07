@@ -178,12 +178,13 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 .body(param.toString())
                 .timeout(10000)
                 .execute().body();
+        log.info("手机号：{}，登录授权返回值为：{}",viCode.getPhone(),resultStr);
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(Metror::getPhone,viCode.getPhone());
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
         if(!StringUtils.isEmpty(resultStr) && resultStr.contains("{\"userInfo\"")){
             com.alibaba.fastjson.JSONObject object = com.alibaba.fastjson.JSONObject.parseObject(resultStr);
             String token = (String)object.get("accesstoken");
-            QueryWrapper<Metror> queryWrapper = new QueryWrapper();
-            queryWrapper.lambda().eq(Metror::getPhone,viCode.getPhone());
-            List<Metror> metrors = baseMapper.selectList(queryWrapper);
             if(CollectionUtils.isEmpty(metrors)){
                 return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
             }else {
@@ -191,7 +192,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 metror.setMetroToken(token);
                 metror.setTokenFlag("Y");
                 baseMapper.updateById(metror);
-
+                log.info("用户：{}，登录授权返回值为：{}",metror.getName(),resultStr);
                 try {
                     //发送通知
                     String emailHeader = "地铁预约授权刷新成功";
@@ -202,7 +203,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     //取到时间
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
                     String format = simpleDateFormat.format(date);
-                    String emailMessage = "恭喜您地铁预约授权成功，下次需授权时间为："+format;
+                    String emailMessage = "恭喜您地铁预约授权成功，下次需授权时间为：" + format;
                     log.info("{}: 恭喜您地铁预约授权成功\n 下次需授权时间为：{}", metror.getName(),format);
                     sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
                 } catch (Exception e) {
@@ -210,6 +211,10 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 }
             }
             return AjaxResult.build2Success("token刷新成功");
+        }else{
+            if(CollectionUtils.isEmpty(metrors)){
+                return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
+            }
         }
         return AjaxResult.build2ServerError("token刷新失败");
     }
