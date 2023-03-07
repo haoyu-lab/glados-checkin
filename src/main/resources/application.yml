@@ -42,6 +42,8 @@ spring:
         deny:
         reset-enable: false
         login-username: admin
+  main:
+    allow-circular-references: true
 #  main:
 #    allow-circular-references: true
 
