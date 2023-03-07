@@ -34,7 +34,7 @@ public class TaskUtils {
     private SendWeChat sendWeChat;
 
     @Autowired
-    private MetrorMapper metrorMapper;
+    private MetroService metroService;
 
     /**
      * 检查今天是否需要抢票
@@ -173,6 +173,8 @@ public class TaskUtils {
 
             /** 改为微信通知 */
             if (flag) {
+                metror.setIsNeedOrder("true");
+                metroService.updateMetror(metror);
                 String emailHeader = "地铁预约抢票成功通知";
                 sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
             } else {
