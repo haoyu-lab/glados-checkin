@@ -67,6 +67,7 @@ public class TaskUtils {
         LocalDateTime reservationTime = LocalDateTimeUtil.of(dateTime);
         DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"), DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
+        log.info("{},到期时间：{}",metror.getName(),tokenRxpireTime);
         if (tokenRxpireTime.isBefore(startTime)) {
             if(!StringUtils.isEmpty(metror.getTokenFlag()) && "N".equals(metror.getTokenFlag())){
                 return false;
