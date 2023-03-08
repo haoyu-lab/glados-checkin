@@ -67,7 +67,7 @@ public class TaskUtils {
         LocalDateTime reservationTime = LocalDateTimeUtil.of(dateTime);
         DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"), DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
-        log.info("{},到期时间：{}",metror.getName(),tokenRxpireTime);
+        log.info("{},到期时间：{}",metror.getName() + " " + metror.getPhone(),tokenRxpireTime);
         if (tokenRxpireTime.isBefore(startTime)) {
             log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
             if(!StringUtils.isEmpty(metror.getTokenFlag()) && "N".equals(metror.getTokenFlag())){
@@ -80,7 +80,7 @@ public class TaskUtils {
 
             return false;
         } else if (tokenRxpireTime.isBefore(reservationTime)) {
-            log.info("{}：您的token即将过期，请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName());
+            log.info("{}：您的token即将过期，请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
             String emailMessage = "您的授权即将过期，过期后将无法自动预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
             String emailHeader = "地铁预约服务授权到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
@@ -89,7 +89,7 @@ public class TaskUtils {
 
             return true;
         } else {
-            log.info("{}：token检查完成，未过期！", metror.getName());
+            log.info("{}：token检查完成，未过期！", metror.getName() + " " + metror.getPhone());
 
             return true;
         }
