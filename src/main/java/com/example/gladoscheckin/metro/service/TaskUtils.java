@@ -101,7 +101,7 @@ public class TaskUtils {
 //        Boolean aBoolean = checkIsMetro(metror);
 
         if ("true".equals(metror.getIsNeedOrder())) {
-            log.info("{}：已预约，不可重复预约", metror.getName());
+            log.info("{}：已预约，不可重复预约", metror.getName() + " " + metror.getPhone());
         }
 
         if ("false".equals(metror.getIsNeedOrder())) {
@@ -118,12 +118,12 @@ public class TaskUtils {
             param.set("snapshotTimeSlot", "0630-0930");
             param.set("timeSlot", metror.getMetroTime());
 
-            log.info("{}：地铁预约参数组装完成", metror.getName());
+            log.info("{}：地铁预约参数组装完成", metror.getName() + " " + metror.getPhone());
 
             String emailMessage = "";
             while (count < 5 && !flag) {
                 try{
-                    log.info("{} : 第" + (count + 1) + "次请求预约接口", metror.getName());
+                    log.info("{} : 第" + (count + 1) + "次请求预约接口", metror.getName() + " " + metror.getPhone());
                     String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
                             .header(Header.AUTHORIZATION, metror.getMetroToken())
                             .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
@@ -132,18 +132,18 @@ public class TaskUtils {
                             .timeout(8000)
                             .execute().body();
 
-                    log.info("{}: 第" + (count + 1) + "次预约结果返回值为：" + resultStr, metror.getName());
+                    log.info("{}: 第" + (count + 1) + "次预约结果返回值为：" + resultStr, metror.getName() + " " + metror.getPhone());
                     if (resultStr != null) {
                         JSONObject res;
                         try {
                             res = JSONUtil.parseObj(resultStr);
                             if (null != res.get("balance")) {
                                 if ((Integer) res.get("balance") > 0) {
-                                    log.info("{}: 恭喜您第" + (count + 1) + "次预约成功，明天不用排队啦！", metror.getName());
+                                    log.info("{}: 恭喜您第" + (count + 1) + "次预约成功，明天不用排队啦！", metror.getName() + " " + metror.getPhone());
                                     emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
                                     flag = true;
                                 }else{
-                                    log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
+                                    log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName() + " " + metror.getPhone());
                                 }
                             } else {
                                 if(!StringUtils.isEmpty(res.get("title")) && "Unauthorized".equals(res.get("title"))){
@@ -151,16 +151,16 @@ public class TaskUtils {
                                     emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
                                     String emailHeader = "地铁预约服务授权到期提醒！！！";
                                     /** 此处需添加微信通知 */
-                                    sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                                    sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
                                     break;
                                 }
-                                log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
+                                log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName() + " " + metror.getPhone());
                             }
                         } catch (Exception e) {
-                            log.info("{}: 第" + (count + 1) + "次预约失败；" + "原因：异常【" + e.getMessage() + "】", metror.getName());
+                            log.info("{}: 第" + (count + 1) + "次预约失败；" + "原因：异常【" + e.getMessage() + "】", metror.getName() + " " + metror.getPhone());
                         }
                     } else {
-                        log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName());
+                        log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName() + " " + metror.getPhone());
                     }
 
                 }catch (Exception e){
@@ -177,11 +177,11 @@ public class TaskUtils {
                 metror.setIsNeedOrder("true");
                 metroService.updateMetror(metror);
                 String emailHeader = "地铁预约抢票成功通知";
-                sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
             } else {
                 emailMessage = "您的地铁预约抢票 失败！！！(自动抢票时间为每日 12点、20点)，详情请联系管理员咨询";
                 String emailHeader = "地铁预约抢票失败通知";
-                sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
             }
 
 //            log.info("地铁预约抢票定时任务执行完成");
@@ -219,18 +219,18 @@ public class TaskUtils {
         if (resultStrs != null && resultStrs.startsWith("[")) {
             JSONArray res = JSONUtil.parseArray(resultStrs);
             if (res.size() > 0) {
-                log.info("{}：" + res.toString(),metror.getName());
-                log.info("{}：已预约，不可重复预约", metror.getName());
+                log.info("{}：" + res.toString(),metror.getName() + " " + metror.getPhone());
+                log.info("{}：已预约，不可重复预约", metror.getName() + " " + metror.getPhone());
                 return true;
             }
         } else if (resultStrs != null && resultStrs.startsWith("{")) {
 //            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
 //            log.info(jsonObject.toString());
-            log.info("{}：" + resultStrs.toString(),metror.getName());
-            log.info("{}：token到期", metror.getName());
+            log.info("{}：" + resultStrs.toString(),metror.getName() + " " + metror.getPhone());
+            log.info("{}：token到期", metror.getName() + " " + metror.getPhone());
             return null;
         } else {
-            log.info("{}：待预约", metror.getName());
+            log.info("{}：待预约", metror.getName() + " " + metror.getPhone());
         }
         return false;
     }
