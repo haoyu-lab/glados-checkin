@@ -198,7 +198,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 metror.setMetroToken(token);
                 metror.setTokenFlag("Y");
                 baseMapper.updateById(metror);
-                log.info("用户：{}，登录授权返回值为：{}",metror.getName(),resultStr);
+                log.info("用户：{}，登录授权返回值为：{}",metror.getName() + " " + metror.getPhone(),resultStr);
                 try {
                     //发送通知
                     String emailHeader = "地铁预约授权刷新成功";
@@ -210,8 +210,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
                     String format = simpleDateFormat.format(date);
                     String emailMessage = "恭喜您地铁预约授权成功，下次需授权时间为：" + format;
-                    log.info("{}: 恭喜您地铁预约授权成功\n 下次需授权时间为：{}", metror.getName(),format);
-                    sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                    log.info("{}: 恭喜您地铁预约授权成功\n 下次需授权时间为：{}", metror.getName() + " " + metror.getPhone(),format);
+                    sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
