@@ -69,10 +69,10 @@ public class TaskUtils {
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
         log.info("{},到期时间：{}",metror.getName(),tokenRxpireTime);
         if (tokenRxpireTime.isBefore(startTime)) {
+            log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
             if(!StringUtils.isEmpty(metror.getTokenFlag()) && "N".equals(metror.getTokenFlag())){
                 return false;
             }
-            log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
             String emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
             String emailHeader = "地铁预约服务授权到期提醒！！！";
             /** 此处需添加微信通知 */

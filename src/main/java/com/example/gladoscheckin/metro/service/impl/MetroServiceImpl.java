@@ -234,7 +234,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     }
 
     @Override
-    public void updateTokenFlag() {
+    public AjaxResult updateTokenFlag() {
         //查询数据
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
@@ -254,7 +254,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 exception.printStackTrace();
             }
         });
-
+        return AjaxResult.build2Success(true);
     }
 
     @Override

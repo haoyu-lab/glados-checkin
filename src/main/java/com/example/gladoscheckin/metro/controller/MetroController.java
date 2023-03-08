@@ -51,6 +51,10 @@ public class MetroController {
     @PostMapping("/insertOrUpdateMetor")
     public AjaxResult insertOrUpdateMetor(@RequestBody RequestVO requestVO){
         return metroService.insertOrUpdateMetor(requestVO);
+    }
 
+    @GetMapping("/updateTokenFlag")
+    public AjaxResult updateTokenFlag(){
+        return metroService.updateTokenFlag();
     }
 }

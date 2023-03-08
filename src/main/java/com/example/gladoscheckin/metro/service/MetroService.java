@@ -25,7 +25,7 @@ public interface MetroService {
 
     AjaxResult metorLogin(VICode viCode);
 
-    void updateTokenFlag();
+    AjaxResult updateTokenFlag();
 
     AjaxResult insertOrUpdateMetor(RequestVO requestVO);
 }
