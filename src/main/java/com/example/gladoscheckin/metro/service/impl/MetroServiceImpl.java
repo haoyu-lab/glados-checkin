@@ -84,6 +84,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 },asyncTaskExecutor);
             });
 
+        }else{
+            log.info("今天不需要抢票呀");
         }
         return AjaxResult.build2Success(true);
     }
