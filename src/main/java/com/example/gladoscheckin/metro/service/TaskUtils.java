@@ -106,7 +106,7 @@ public class TaskUtils {
 
         if ("false".equals(metror.getIsNeedOrder())) {
             //无预约记录
-
+            String appointMentId = "";
             boolean flag = false;
             int count = 0;
 
@@ -141,6 +141,7 @@ public class TaskUtils {
                                 if ((Integer) res.get("balance") > 0) {
                                     log.info("{}: 恭喜您第" + (count + 1) + "次预约成功，明天不用排队啦！", metror.getName() + " " + metror.getPhone());
                                     emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+                                    appointMentId = (String) res.get("appointmentId");
                                     flag = true;
                                 }else{
                                     log.info("{}: 第" + (count + 1) + "次预约失败", metror.getName() + " " + metror.getPhone());
@@ -175,7 +176,6 @@ public class TaskUtils {
             /** 改为微信通知 */
             if (flag) {
                 metror.setIsNeedOrder("true");
-                metroService.updateMetror(metror);
                 String emailHeader = "地铁预约抢票成功通知";
                 sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
             } else {
@@ -183,6 +183,8 @@ public class TaskUtils {
                 String emailHeader = "地铁预约抢票失败通知";
                 sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
             }
+            metror.setAppointMentId(appointMentId);
+            metroService.updateMetror(metror);
 
 //            log.info("地铁预约抢票定时任务执行完成");
         }

@@ -63,6 +63,12 @@ public class Metror {
     @TableField("TOKEN_FLAG")
     private String tokenFlag;
 
+    /**
+     * 下次预约ID
+     */
+    @TableField("APPOINT_MENT_ID")
+    private String appointMentId;
+
 //    /**
 //     * 今天是否需要抢票
 //     */
