@@ -69,4 +69,16 @@ public class MetroController {
     public AjaxResult updateTokenFlag(){
         return metroService.updateTokenFlag();
     }
+
+    @ApiOperation("进站后自动预约")
+    @GetMapping("/getSubwayOrder")
+    public AjaxResult getSubwayOrder(){
+        return metroService.getSubwayOrder();
+    }
+
+    @ApiOperation("修改下次预约ID")
+    @GetMapping("updateAppointMentId")
+    public AjaxResult updateAppointMentId(){
+        return metroService.updateAppointMentId();
+    }
 }

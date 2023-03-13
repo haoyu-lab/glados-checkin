@@ -28,4 +28,9 @@ public interface MetroService {
     AjaxResult updateTokenFlag();
 
     AjaxResult insertOrUpdateMetor(RequestVO requestVO);
+
+    AjaxResult getSubwayOrder();
+
+    AjaxResult updateAppointMentId();
+
 }

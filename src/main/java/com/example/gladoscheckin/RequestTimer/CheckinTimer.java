@@ -51,11 +51,11 @@ public class CheckinTimer {
         log.info("每天凌晨1点刷新是否预约记录字段 结束");
     }
 
-    @Scheduled(cron = "0 0 11 * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void checkTmorrow(){
-        log.info("每天11点检查今天是否需要抢票 开始");
+        log.info("每天9点检查今天是否需要抢票 开始");
         checkTmorrowService.updateCheckTmorrow();
-        log.info("每天11点检查今天是否需要抢票 结束");
+        log.info("每天9点检查今天是否需要抢票 结束");
     }
 
     @Scheduled(cron = "0 45 11,19 * * ?")
@@ -63,5 +63,12 @@ public class CheckinTimer {
         log.info("每天十一点四十五修改用户token字段并推送消息， 开始");
         metroService.updateTokenFlag();
         log.info("每天十一点四十五修改用户token字段并推送消息 结束");
+    }
+
+    @Scheduled(cron = "0 0 10 * * ?")
+    public void getSubwayOrder(){
+        log.info("每天十点进站后自动预约， 开始");
+        metroService.getSubwayOrder();
+        log.info("每天十点进站后自动预约 结束");
     }
 }

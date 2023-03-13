@@ -2,7 +2,9 @@ package com.example.gladoscheckin.metro.service.impl;
 
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.gladoscheckin.common.AjaxResult;
@@ -100,7 +102,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     @Override
     public void refreshIsNeedOrder(){
         QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(Metror::getIsVaild,"Y");
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y")
+                .eq(Metror::getTokenFlag,"Y");
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         metrors.forEach(e ->{
             try {
@@ -199,6 +202,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
                 metror.setTokenFlag("Y");
+                metror.setAppointMentId("");
                 baseMapper.updateById(metror);
                 log.info("用户：{}，登录授权返回值为：{}",metror.getName() + " " + metror.getPhone(),resultStr);
                 try {
@@ -301,6 +305,208 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         }
 
 
+    }
+
+    @Override
+    public AjaxResult getSubwayOrder() {
+        //先查询系统有效及授权有效的用户
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y")
+                .eq(Metror::getTokenFlag,"Y");
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        metrors.stream().forEach(e -> {
+            //查询是否已预约下次进站
+            String resultStrs = HttpRequest.get("https://webapi.mybti.cn/AppointmentRecord/GetAppointmentList?status=0&lastid=")
+                    .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+                    .header(Header.AUTHORIZATION, e.getMetroToken())
+                    .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                    .timeout(10000)
+                    .execute().body();
+            if (resultStrs != null && resultStrs.startsWith("[")) {
+                JSONArray res = JSONUtil.parseArray(resultStrs);
+                if (res.size() > 0) {
+                    log.info("{}：" + res.toString(),e.getName() + " " + e.getPhone());
+                    log.info("{}：已预约，不可重复预约", e.getName() + " " + e.getPhone());
+                    //更新数据
+                    JSONObject object = JSONUtil.parseObj(res.get(0));
+                    e.setAppointMentId((String) object.get("id"));
+                    updateMetror(e);
+//                    return true;
+                }else{
+                    log.info("{}：待预约", e.getName() + " " + e.getPhone());
+                    //需要进行预约
+                    if(!StringUtils.isEmpty(e.getAppointMentId())){
+                        //可以预约
+                        //调用接口
+                        JSONObject param = new JSONObject();
+                        param.set("appointmentId", e.getAppointMentId());
+
+                        log.info("{}：地铁预约参数组装完成", e.getName() + " " + e.getPhone());
+
+                        String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointmentIgnoreBalance")
+                                .header(Header.AUTHORIZATION, e.getMetroToken())
+                                .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+                                .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                                .body(param.toString())
+                                .timeout(8000)
+                                .execute().body();
+
+                        if (resultStr != null) {
+                            JSONObject ress;
+                            try {
+                                ress = JSONUtil.parseObj(resultStr);
+                                if (null != ress.get("balance") && (Integer) ress.get("balance") == 0) {
+                                    //预约成功，发送通知并修改下次预约ID
+                                    e.setIsNeedOrder("true");
+                                    e.setAppointMentId((String) ress.get("appointmentId"));
+                                    updateMetror(e);
+                                    //发送通知
+                                    String emailHeader = "地铁预约抢票成功通知";
+                                    String emailMessage = "恭喜您地铁进站预约成功(本次预约为当天进站后自动预约)，地点为：" + e.getLineName() + e.getStationName() + ress.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+                                    sendWeChat.sendMessage(e.getName() + " " + e.getPhone(), null, e.getPushPlusToken(), emailHeader, emailMessage);
+                                }
+                            }catch (Exception es){
+                                es.printStackTrace();
+                            }
+
+                        }
+
+                    }
+                }
+            } else if (resultStrs != null && resultStrs.startsWith("{")) {
+//            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
+//            log.info(jsonObject.toString());
+                log.info("{}：" + resultStrs.toString(),e.getName() + " " + e.getPhone());
+                log.info("{}：token到期", e.getName() + " " + e.getPhone());
+//                return null;
+            } else {
+                log.info("{}：待预约", e.getName() + " " + e.getPhone());
+                //需要进行预约
+                if(!StringUtils.isEmpty(e.getAppointMentId())){
+                    //可以预约
+                    //调用接口
+                    JSONObject param = new JSONObject();
+                    param.set("appointmentId", e.getAppointMentId());
+
+                    log.info("{}：地铁预约参数组装完成", e.getName() + " " + e.getPhone());
+
+                    String resultStr = HttpRequest.post("https://webapi.mybti.cn/Appointment/CreateAppointment")
+                            .header(Header.AUTHORIZATION, e.getMetroToken())
+                            .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+                            .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                            .body(param.toString())
+                            .timeout(8000)
+                            .execute().body();
+
+                    if (resultStr != null) {
+                        JSONObject res;
+                        try {
+                            res = JSONUtil.parseObj(resultStr);
+                            if (null != res.get("balance") && (Integer) res.get("balance") == 0) {
+                                //预约成功，发送通知并修改下次预约ID
+                                e.setIsNeedOrder("true");
+                                e.setAppointMentId((String) res.get("appointmentId"));
+                                updateMetror(e);
+                                //发送通知
+                                String emailHeader = "地铁预约抢票成功通知";
+                                String emailMessage = "恭喜您地铁进站预约成功(本次预约为当天进站后自动预约)，地点为：" + e.getLineName() + e.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+                                sendWeChat.sendMessage(e.getName() + " " + e.getPhone(), null, e.getPushPlusToken(), emailHeader, emailMessage);
+                            }
+                        }catch (Exception es){
+                            es.printStackTrace();
+                        }
+
+                    }
+
+                }
+            }
+        });
+
+        return AjaxResult.build2Success(true);
+    }
+
+    @Override
+    public AjaxResult updateAppointMentId() {
+        /** 检查今天是否需要抢票 */
+        CheckTmorrow checkTmorrow = checkTmorrowService.getCheckTmorrow();
+        Boolean isReservation = null;
+        if(!ObjectUtils.isEmpty(checkTmorrow)){
+            String flag = checkTmorrow.getTomorrowIsFlag();
+            if("Y".equals(flag)){
+                isReservation = true;
+            }else{
+                isReservation = false;
+            }
+        }else{
+            isReservation = taskUtils.checkTomorrowIsHoliday();
+        }
+        if(!isReservation){
+            return AjaxResult.build2ServerError("今天不抢票");
+        }
+        //先查询系统有效及授权有效的用户
+        QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Metror::getIsVaild,"Y")
+//                .eq(Metror::getIsNeedOrder,"false")
+                .eq(Metror::getTokenFlag,"Y");
+        List<Metror> metrors = baseMapper.selectList(queryWrapper);
+        metrors.stream().forEach(e -> {
+            try{
+                if(StringUtils.isEmpty(e.getAppointMentId())){
+                    String resultStrs = HttpRequest.get("https://webapi.mybti.cn/AppointmentRecord/GetAppointmentList?status=2&lastid=")
+                            .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
+                            .header(Header.AUTHORIZATION, e.getMetroToken())
+                            .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
+                            .timeout(10000)
+                            .execute().body();
+                    if (resultStrs != null && resultStrs.startsWith("[")) {
+                        JSONArray res = JSONUtil.parseArray(resultStrs);
+                        if (res.size() > 0) {
+                            //获取到数据
+                            log.info("{}：" + res.toString(),e.getName() + " " + e.getPhone());
+                            JSONObject object = JSONUtil.parseObj(res.get(0));
+//                        MetroVO metroVO =(MetroVO) res.get(0);
+                            String enteredTime = (String) object.get("enteredTime");
+//                        String enteredTime = metroVO.getEnteredTime();
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//                        String createTime = request.getParameter("CreateTime");
+                            Date date = simpleDateFormat.parse(enteredTime);
+                            boolean nowFlag = isNow(date);
+                            if(nowFlag){
+                                e.setAppointMentId((String) object.get("id"));
+                                updateMetror(e);
+                            }
+//                    return true;
+                        }
+                    } else if (resultStrs != null && resultStrs.startsWith("{")) {
+//            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
+//            log.info(jsonObject.toString());
+                        log.info("{}：" + resultStrs.toString(),e.getName() + " " + e.getPhone());
+                        log.info("{}：token到期", e.getName() + " " + e.getPhone());
+//                return null;
+                    }
+                }
+            }catch (Exception es){
+                es.printStackTrace();
+            }
+
+        });
+        return AjaxResult.build2Success(true);
+    }
+
+    public static boolean isNow(Date date) {
+
+
+        // 默认的年月日的格式. yyyy-MM-dd
+        String PATTEN_DEFAULT_YMD = "yyyy-MM-dd";
+        // 当前时间
+        Date now = new Date();
+        SimpleDateFormat sf = new SimpleDateFormat(PATTEN_DEFAULT_YMD);
+        //获取今天的日期
+        String nowDay = sf.format(now);
+        //对比的时间
+        String day = sf.format(date);
+
+        return day.equals(nowDay);
     }
 
     //该方法为测试多线程方法，不可用

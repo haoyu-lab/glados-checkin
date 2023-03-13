@@ -12,7 +12,6 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.gladoscheckin.common.SendWeChat;
-import com.example.gladoscheckin.metro.MetroVO;
 import com.example.gladoscheckin.metro.Metror;
 import com.example.gladoscheckin.metro.mapper.MetrorMapper;
 import lombok.extern.slf4j.Slf4j;
