@@ -324,8 +324,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     .execute().body();
             if (resultStrs != null && resultStrs.startsWith("[")) {
                 JSONArray res = JSONUtil.parseArray(resultStrs);
+                log.info("{}：" + res.toString(),e.getName() + " " + e.getPhone());
                 if (res.size() > 0) {
-                    log.info("{}：" + res.toString(),e.getName() + " " + e.getPhone());
                     log.info("{}：已预约，不可重复预约", e.getName() + " " + e.getPhone());
                     //更新数据
                     JSONObject object = JSONUtil.parseObj(res.get(0));
@@ -350,7 +350,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                                 .body(param.toString())
                                 .timeout(8000)
                                 .execute().body();
-
+                        log.info("{},预约结果返回值：{}", e.getName() + " " + e.getPhone(),resultStr);
                         if (resultStr != null) {
                             JSONObject ress;
                             try {
