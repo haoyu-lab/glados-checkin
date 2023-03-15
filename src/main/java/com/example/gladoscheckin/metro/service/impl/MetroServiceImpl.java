@@ -202,7 +202,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
                 metror.setTokenFlag("Y");
-                metror.setAppointMentId("");
+//                metror.setAppointMentId("");
                 baseMapper.updateById(metror);
                 log.info("用户：{}，登录授权返回值为：{}",metror.getName() + " " + metror.getPhone(),resultStr);
                 try {
@@ -330,6 +330,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     //更新数据
                     JSONObject object = JSONUtil.parseObj(res.get(0));
                     e.setAppointMentId((String) object.get("id"));
+                    e.setIsNeedOrder("true");
                     updateMetror(e);
 //                    return true;
                 }else{
@@ -378,6 +379,9 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 //            log.info(jsonObject.toString());
                 log.info("{}：" + resultStrs.toString(),e.getName() + " " + e.getPhone());
                 log.info("{}：token到期", e.getName() + " " + e.getPhone());
+                e.setTokenFlag("N");
+                e.setAppointMentId("");
+                updateMetror(e);
 //                return null;
             } else {
                 log.info("{}：待预约", e.getName() + " " + e.getPhone());
