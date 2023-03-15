@@ -362,7 +362,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                                     e.setAppointMentId((String) ress.get("appointmentId"));
                                     updateMetror(e);
                                     //发送通知
-                                    String emailHeader = "地铁预约抢票成功通知";
+                                    String emailHeader = "地铁进站自动预约成功通知";
                                     String emailMessage = "恭喜您地铁进站预约成功(本次预约为当天进站后自动预约)，地点为：" + e.getLineName() + e.getStationName() + ress.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
                                     sendWeChat.sendMessage(e.getName() + " " + e.getPhone(), null, e.getPushPlusToken(), emailHeader, emailMessage);
                                 }
