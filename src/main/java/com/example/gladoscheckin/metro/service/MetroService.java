@@ -33,4 +33,5 @@ public interface MetroService {
 
     AjaxResult updateAppointMentId();
 
+    void getSubwayByMinute();
 }
