@@ -19,8 +19,10 @@ import lombok.*;
 @TableName("CHECK_TOMORROW")
 public class CheckTmorrow {
 
-    /** 点击次数 */
+    /** 明日是否需要抢票 */
     @TableField("TOMORROW_IS_FLAG")
     private String tomorrowIsFlag;
 
+    @TableField("TODAY_IS_FLAG")
+    private String todayIsFlag;
 }

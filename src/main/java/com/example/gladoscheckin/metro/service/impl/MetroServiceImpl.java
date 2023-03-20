@@ -503,14 +503,14 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         CheckTmorrow checkTmorrow = checkTmorrowService.getCheckTmorrow();
         Boolean isReservation = null;
         if(!ObjectUtils.isEmpty(checkTmorrow)){
-            String flag = checkTmorrow.getTomorrowIsFlag();
+            String flag = checkTmorrow.getTodayIsFlag();
             if("Y".equals(flag)){
                 isReservation = true;
             }else{
                 isReservation = false;
             }
         }else{
-            isReservation = taskUtils.checkTomorrowIsHoliday();
+            isReservation = taskUtils.checkTodayIsHoliday();
         }
         if(isReservation){
             //先查询系统有效及授权有效的用户

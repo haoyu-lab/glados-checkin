@@ -39,12 +39,18 @@ public class CheckTmorrowServiceImpl  extends ServiceImpl<CheckTmorrowMapper, Ch
         List<CheckTmorrow> checkTmorrows = baseMapper.selectList(new QueryWrapper<CheckTmorrow>());
         CheckTmorrow checkTmorrow = null;
         Boolean isReservation = taskUtils.checkTomorrowIsHoliday();
+        Boolean isResToday = taskUtils.checkTodayIsHoliday();
         if(CollectionUtils.isEmpty(checkTmorrows)){
 
             if (isReservation) {
                 checkTmorrow = CheckTmorrow.builder().tomorrowIsFlag("Y").build();
             } else {
                 checkTmorrow = CheckTmorrow.builder().tomorrowIsFlag("N").build();
+            }
+            if(isResToday){
+                checkTmorrow.setTodayIsFlag("Y");
+            }else {
+                checkTmorrow.setTodayIsFlag("N");
             }
             baseMapper.insert(checkTmorrow);
         }else{
@@ -53,6 +59,11 @@ public class CheckTmorrowServiceImpl  extends ServiceImpl<CheckTmorrowMapper, Ch
                 checkTmorrow.setTomorrowIsFlag("Y");
             }else {
                 checkTmorrow.setTomorrowIsFlag("N");
+            }
+            if(isResToday){
+                checkTmorrow.setTodayIsFlag("Y");
+            }else {
+                checkTmorrow.setTodayIsFlag("N");
             }
             baseMapper.update(checkTmorrow,new QueryWrapper<CheckTmorrow>());
         }

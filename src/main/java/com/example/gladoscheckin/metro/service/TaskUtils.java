@@ -35,6 +35,7 @@ public class TaskUtils {
     @Autowired
     private MetroService metroService;
 
+
     /**
      * 检查今天是否需要抢票
      */
@@ -46,6 +47,21 @@ public class TaskUtils {
             return true;
         } else {
             log.info("明个放假，不用抢票啦！！");
+            return false;
+        }
+    }
+
+    /**
+     * 检查今天是否需要抢票
+     */
+    public Boolean checkTodayIsHoliday() {
+        String res = HttpUtil.get("https://tool.bitefu.net/jiari/?d=" + DateUtil.date().toString("yyyyMMdd"));
+        log.info("检查一下今天是不是假期{}", res);
+        if ("0".equals(res)) {
+            log.info("今天要上班，还是需要进站抢票滴！！");
+            return true;
+        } else {
+            log.info("今天放假，不用进站不用抢票啦！！");
             return false;
         }
     }
