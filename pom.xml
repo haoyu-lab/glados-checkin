@@ -132,6 +132,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+        <!--   定时任务     -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.lionsoul/ip2region -->
 <!--        <dependency>-->
