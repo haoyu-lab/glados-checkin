@@ -231,7 +231,9 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             }
 
 //            return AjaxResult.build2Success("token刷新成功");
-        }else{
+        }else if(resultStr.contains("exception")){
+            return AjaxResult.build2ServerError("验证码验证失败，请检查验证码");
+        } else{
             if(CollectionUtils.isEmpty(metrors)){
                 return AjaxResult.build2ServerError("该用户未注册，请联系管理员注册");
             }
