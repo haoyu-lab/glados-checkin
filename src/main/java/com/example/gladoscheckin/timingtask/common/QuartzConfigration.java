@@ -1,4 +1,4 @@
-package com.example.gladoscheckin.timingtask.common;//package com.bfjz.wmannouncement.modules.timer.common;
+//package com.example.gladoscheckin.timingtask.common;//package com.bfjz.wmannouncement.modules.timer.common;
 //
 //import com.bfjz.wmannouncement.modules.timer.pojo.CronTask;
 //import com.bfjz.wmannouncement.modules.timer.service.CronTaskService;
