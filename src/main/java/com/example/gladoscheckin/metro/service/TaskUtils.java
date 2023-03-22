@@ -166,6 +166,7 @@ public class TaskUtils {
                                     log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
                                     emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
                                     String emailHeader = "地铁预约服务授权到期提醒！！！";
+                                    metror.setTokenFlag("N");
                                     /** 此处需添加微信通知 */
                                     sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
                                     break;
