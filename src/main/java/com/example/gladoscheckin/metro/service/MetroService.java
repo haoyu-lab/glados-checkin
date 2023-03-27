@@ -5,6 +5,8 @@ import com.example.gladoscheckin.metro.Metror;
 import com.example.gladoscheckin.metro.RequestVO;
 import com.example.gladoscheckin.pushsend.pojo.VICode;
 
+import java.text.ParseException;
+
 /**
  *
  */
@@ -23,7 +25,7 @@ public interface MetroService {
 
     AjaxResult getVlCode(String phone);
 
-    AjaxResult metorLogin(VICode viCode);
+    AjaxResult metorLogin(VICode viCode) throws ParseException;
 
     AjaxResult updateTokenFlag();
 

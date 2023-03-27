@@ -54,7 +54,7 @@ public class MetroController {
 
     @ApiOperation(value = "授权登录")
     @PostMapping("/metorLogin")
-    public AjaxResult metorLogin(@RequestBody VICode viCode){
+    public AjaxResult metorLogin(@RequestBody VICode viCode) throws Exception{
         return metroService.metorLogin(viCode);
     }
 

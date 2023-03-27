@@ -166,7 +166,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     }
 
     @Override
-    public AjaxResult metorLogin(VICode viCode){
+    public AjaxResult metorLogin(VICode viCode) throws ParseException {
         if(StringUtils.isEmpty(viCode.getPhone())){
             return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
@@ -203,8 +203,10 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
                 metror.setTokenFlag("Y");
+                //查询并修改下次预约ID
+                metror = searchAppointMentId(metror);
 //                metror.setAppointMentId("");
-                baseMapper.updateById(metror);
+                updateMetror(metror);
                 log.info("用户：{}，登录授权返回值为：{}",metror.getName() + " " + metror.getPhone(),resultStr);
                 try {
                     //发送通知
@@ -295,7 +297,11 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         List<Metror> metrors = baseMapper.selectList(queryWrapper);
         if(!CollectionUtils.isEmpty(metrors)){
             Metror metror = metrors.get(0);
+            if(!requestVO.getMetroTime().equals(metror.getMetroTime())){
+                metror.setAppointMentId("");
+            }
             BeanUtils.copyProperties(requestVO,metror);
+
             baseMapper.updateById(metror);
             return AjaxResult.build2Success("修改成功！！！");
         }else{
@@ -341,7 +347,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     }else{
                         log.info("{}：待预约", e.getName() + " " + e.getPhone());
                         //需要进行预约
-                        if(!StringUtils.isEmpty(e.getAppointMentId())){
+                        if(!StringUtils.isEmpty(e.getAppointMentId())) {
                             //可以预约
                             //调用接口
                             getSubway(e);
@@ -377,11 +383,11 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 //                            }
 //
 //                        }
-
-                        }else{
-                            e = searchAppointMentId(e);
-                            getSubway(e);
                         }
+//                        }else{
+//                            e = searchAppointMentId(e);
+//                            getSubway(e);
+//                        }
                     }
                 } else if (resultStrs != null && resultStrs.startsWith("{")) {
 //            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
@@ -493,7 +499,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     boolean nowFlag = isNow(date);
                     if(nowFlag){
                         metror.setAppointMentId((String) object.get("id"));
-                        updateMetror(metror);
+//                        updateMetror(metror);
                     }
 //                    return true;
                 }
@@ -591,7 +597,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                         }else{
                             log.info("{}：待预约", e.getName() + " " + e.getPhone());
                             //需要进行预约
-                            if(!StringUtils.isEmpty(e.getAppointMentId())){
+                            if(!StringUtils.isEmpty(e.getAppointMentId())) {
                                 //可以预约
                                 //调用接口
                                 getSubway(e);
@@ -627,11 +633,11 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 //                                    }
 //
 //                                }
-
-                            }else{
-                                e = searchAppointMentId(e);
-                                getSubway(e);
                             }
+//                            }else{
+//                                e = searchAppointMentId(e);
+//                                getSubway(e);
+//                            }
                         }
                     } else if (resultStrs != null && resultStrs.startsWith("{")) {
 //            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
