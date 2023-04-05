@@ -74,7 +74,7 @@ public class TaskUtils {
         String[] aTokens = aToken.split(",");
         DateTime tokenTime = new DateTime(Long.parseLong(aTokens[1]));
         LocalDateTime tokenRxpireTime = LocalDateTimeUtil.of(tokenTime);
-
+        tokenRxpireTime = tokenRxpireTime.plusHours(-8l);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         String time = simpleDateFormat.format(new Date(Long.parseLong(aTokens[1])));
 
