@@ -60,7 +60,7 @@ public class MetroController {
 
     @ApiOperation(value = "新增或修改预约用户信息")
     @PostMapping("/insertOrUpdateMetor")
-    public AjaxResult insertOrUpdateMetor(@RequestBody RequestVO requestVO){
+    public AjaxResult insertOrUpdateMetor(@RequestBody RequestVO requestVO) throws Exception{
         return metroService.insertOrUpdateMetor(requestVO);
     }
 

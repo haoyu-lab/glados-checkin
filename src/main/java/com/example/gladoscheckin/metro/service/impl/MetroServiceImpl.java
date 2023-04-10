@@ -270,6 +270,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 
     @Override
     public AjaxResult insertOrUpdateMetor(RequestVO requestVO) {
+        String emailHeader = "地铁预约注册成功";
         if(StringUtils.isEmpty(requestVO.getMetroToken())){
             return AjaxResult.build2ServerError("预约token不可为空");
         }
@@ -303,16 +304,29 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             BeanUtils.copyProperties(requestVO,metror);
 
             baseMapper.updateById(metror);
-            return AjaxResult.build2Success("修改成功！！！");
+            emailHeader = "地铁预约修改成功";
         }else{
             Metror metror = new Metror();
             BeanUtils.copyProperties(requestVO,metror);
             metror.setIsNeedOrder("false");
             metror.setTokenFlag("Y");
             baseMapper.insert(metror);
-            return AjaxResult.build2Success("注册成功！！！");
         }
-
+        try{
+            //发送通知
+            String emailMessage = "您的" + emailHeader + "，地点为：" + requestVO.getLineName()+requestVO.getStationName() + "；预约时间为："+ requestVO.getMetroTime() + "\n \n 中午十二点或者晚上八点自动抢（12点没抢到，晚上8点会再抢一次）\n" +
+                    "周五周六不抢票，周日抢下周一的\n" +
+                    "\n" +
+                    "‼重要提示：授权时效为七天，授权到期会导致无法自动预约，所以每周需要重新授权一次\n" +
+                    "授权方式如下（每周一次）：\n" +
+                    "1、打开链接：https://www.huyoa.com/\n" +
+                    "2、在这个页面里输入手机号，点击获取验证码；\n" +
+                    "3、输入收到的验证码，点击登录即可\n";
+            sendWeChat.sendMessage(requestVO.getName() + " " + requestVO.getPhone(), null, requestVO.getPushPlusToken(), emailHeader, emailMessage);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return AjaxResult.build2Success(emailHeader);
 
     }
 
