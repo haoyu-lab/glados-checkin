@@ -144,7 +144,7 @@ public class TaskUtils {
                             .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
                             .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
                             .body(param.toString())
-                            .timeout(8000)
+                            .timeout(10000)
                             .execute().body();
 
                     log.info("{}: 第" + (count + 1) + "次预约结果返回值为：" + resultStr, metror.getName() + " " + metror.getPhone());
