@@ -197,6 +197,7 @@ public class TaskUtils {
             } else {
                 emailMessage = "您的地铁预约抢票 失败！！！(自动抢票时间为每日 12点、20点)，详情请联系管理员咨询";
                 String emailHeader = "地铁预约抢票失败通知";
+                metror.setIsNeedOrder("false");
                 sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
             }
             metror.setAppointMentId(appointMentId);
