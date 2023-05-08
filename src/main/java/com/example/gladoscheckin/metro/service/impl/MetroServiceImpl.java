@@ -198,7 +198,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                         .metroToken(token)
                         .phone(viCode.getPhone())
                         .message("该用户未注册，是否进行注册？").build();
-                return AjaxResult.build(Status.UNLOGIN_USER,"用户未注册",build);
+                return AjaxResult.build(Status.UNLOGIN_USER,"该用户未注册，请联系管理员注册",build);
             }else {
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
