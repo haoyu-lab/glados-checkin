@@ -77,3 +77,5 @@ email:
 #  time: 0800-0810
 #    # 邮件接收邮箱
 #  email: xxxx
+push:
+  rootToken: 6dc0c0dd0ef347239c0aaad2eecb1e58

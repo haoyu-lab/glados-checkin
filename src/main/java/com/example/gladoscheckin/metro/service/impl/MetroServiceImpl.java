@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -52,6 +53,8 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
     private SendWeChat sendWeChat;
     @Autowired
     private CheckTmorrowService checkTmorrowService;
+    @Value("${push.rootToken}")
+    public String rootToken;
 
 
     @Override
@@ -198,7 +201,18 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                         .metroToken(token)
                         .phone(viCode.getPhone())
                         .message("该用户未注册，是否进行注册？").build();
+                // 通知管理员
+                try {
+                    String emailHeader = "未注册用户尝试授权登录";
+                    String emailMessage = "未注册用户尝试授权登录，手机号为：" + viCode.getPhone();
+                    log.info(emailMessage);
+                    sendWeChat.sendMessage("huyoa", null, rootToken, emailHeader, emailMessage);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 return AjaxResult.build(Status.UNLOGIN_USER,"该用户未注册，请联系管理员注册",build);
+
             }else {
                 Metror metror = metrors.get(0);
                 metror.setMetroToken(token);
