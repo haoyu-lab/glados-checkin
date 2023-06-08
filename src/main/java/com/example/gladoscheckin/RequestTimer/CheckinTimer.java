@@ -1,5 +1,6 @@
 package com.example.gladoscheckin.RequestTimer;
 
+import com.example.gladoscheckin.csdnrefresh.service.CsdnService;
 import com.example.gladoscheckin.metro.service.CheckTmorrowService;
 import com.example.gladoscheckin.metro.service.MetroService;
 import com.example.gladoscheckin.qd.service.CheckinService;
@@ -20,6 +21,9 @@ public class CheckinTimer {
     MetroService metroService;
     @Autowired
     CheckTmorrowService checkTmorrowService;
+
+    @Autowired
+    private CsdnService csdnService;
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void checkin(){
@@ -84,6 +88,13 @@ public class CheckinTimer {
     public void getSubwayByMinute1(){
         log.info("=================================start===================================");
         metroService.getSubwayByMinute();
+        log.info("=================================end===================================");
+    }
+
+    @Scheduled(cron = "0 0,30 * * * ? ")
+    public void csdnRefresh(){
+        log.info("=================================start===================================");
+        csdnService.csdnRefresh();
         log.info("=================================end===================================");
     }
 }
