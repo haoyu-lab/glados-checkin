@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.example.gladoscheckin.csdnrefresh.service.impl.JsoupGetArticleUrl.getDoc;
+import static com.example.gladoscheckin.csdnrefresh.service.impl.JsoupGetArticleUrl.getDoc1;
 
 
 /**
@@ -23,6 +24,7 @@ import static com.example.gladoscheckin.csdnrefresh.service.impl.JsoupGetArticle
 @Slf4j
 public class JsoupGetIp {
 
+
     @Value("${csdn.url}")
     public String csdnurl;
     /**
@@ -30,6 +32,9 @@ public class JsoupGetIp {
      * @param url
      * @return
      */
+
+    private ArrayList<String> agentList = new ArrayList<>();
+
     private static Pattern ipreg = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} \\d{4}");
     private static Pattern ipregs = Pattern.compile("((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)");
     private static Pattern portreg = Pattern.compile("([0-9]{4})");
@@ -68,7 +73,8 @@ public class JsoupGetIp {
                 ipList.add(AgencyIp);
             }
         } catch (IOException e) {
-            System.out.println("加载文档出粗");
+            e.printStackTrace();
+            System.out.println("加载文档出错");
         }
         return ipList;
     }
@@ -141,21 +147,38 @@ public class JsoupGetIp {
 
     public void csdnRefresh(){
         //1.想http代理地址api发起请求，获得想要的代理ip地址
-        String url = "http://www.xicidaili.com/nn/";
-        String foreignUrl = "http://www.kuaidaili.com/free/outha/";
-        final List<AgencyIp> ipList = getForeignIp();
+//        String url = "http://www.xicidaili.com/nn/";
+//        String foreignUrl = "http://www.kuaidaili.com/free/outha/";
+//        final List<AgencyIp> ipList = getForeignIp();
 //        final List<AgencyIp> ipList = Arrays.asList(new AgencyIp("178.62.123.38","8118"));
-        ipList.addAll(getIp(url));
+//        ipList.addAll(getIp(url));
 
 //        List<String> urls = getCsdnBlogsUrl();
 //        urls.add("https://s01.flagcounter.com/map/i6UK/size_s/txt_000000/border_CCCCCC/pageviews_1/viewers_0/flags_0");
+        int count = 0;
         if(!StringUtils.isEmpty(csdnurl)){
-            List<String> urls = Arrays.asList(csdnurl);
-            for (final String u:urls){
-                log.info("文章地址:{}", u);
-                visit1(u,ipList);
+            agentList.add("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
+            agentList.add("Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)");
+//            List<String> urls = Arrays.asList(csdnurl);
+            for(int i = 0; i< 34; i++){
+                try{
+                    if(i >= 1){
+                        Thread.sleep(50000);
+                    }
+                    for(String agent : agentList){
+                        Document doc = getDoc1(csdnurl,agent);
+                        if(doc != null) {
+                            count ++;
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    log.error("刷新失败:{}",e.getMessage());
+                }
+
             }
         }
+        log.info("成功刷新次数: {}", count);
 
     }
 
