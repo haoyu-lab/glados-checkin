@@ -1,5 +1,8 @@
 package com.example.gladoscheckin.csdnrefresh.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.gladoscheckin.csdnrefresh.mapper.CsdnDetailMapper;
+import com.example.gladoscheckin.csdnrefresh.pojo.CsdnDetail;
 import com.example.gladoscheckin.csdnrefresh.service.CsdnService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -18,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Service
 @Slf4j
-public class CsdnServiceImpl implements CsdnService {
+public class CsdnServiceImpl extends ServiceImpl<CsdnDetailMapper, CsdnDetail> implements CsdnService {
 
     @Autowired
     private JsoupGetIp jsoupGetIp;
@@ -28,8 +32,11 @@ public class CsdnServiceImpl implements CsdnService {
 
     @Override
     public void csdnRefresh() {
-        CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
-            jsoupGetIp.csdnRefresh();
-        },asyncTaskExecutor);
+        List<CsdnDetail> csdnDetails = baseMapper.selectList(null);
+        if(csdnDetails.size() != 0){
+            CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+                jsoupGetIp.csdnRefresh(csdnDetails);
+            },asyncTaskExecutor);
+        }
     }
 }
