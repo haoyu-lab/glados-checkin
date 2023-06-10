@@ -91,7 +91,7 @@ public class CheckinTimer {
         log.info("=================================end===================================");
     }
 
-//    @Scheduled(cron = "0 15,45 * * * ? ")
+    @Scheduled(cron = "0 15,45 * * * ? ")
     public void csdnRefresh(){
         log.info("=================================start===================================");
         csdnService.csdnRefresh();
