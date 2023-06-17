@@ -32,10 +32,7 @@ import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
@@ -85,6 +82,14 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if(isReservation){
 //            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
             metrors.forEach(e ->{
+                //判断是否是小力，是否是周四
+                int week = 0;
+                if("18435205284".equals(e.getPhone())){
+                    week = isWeek();
+                    if(week == 4){
+                        e.setWeekDate("0750-0800");
+                    }
+                }
                 CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
                     taskUtils.start(e);
                 },asyncTaskExecutor);
@@ -593,6 +598,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             isReservation = taskUtils.checkTodayIsHoliday();
         }
         if(isReservation){
+
             //先查询系统有效及授权有效的用户
             QueryWrapper<Metror> queryWrapper = new QueryWrapper<>();
             queryWrapper.lambda().eq(Metror::getIsVaild,"Y")
@@ -601,7 +607,17 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             List<Metror> metrors = baseMapper.selectList(queryWrapper);
 
             metrors.stream().forEach(e ->{
+
                 try{
+                    //如果是小力，并且是周四和周五，则跳出本次循环(进站不自动预约)
+                    int week = 0;
+                    if("18435205284".equals(e.getPhone())){
+                        //查询是否周四或周五
+                        week = isWeek();
+                    }
+                    if(week == 4 || week == 5){
+                        return;
+                    }
                     //查询是否已预约下次进站
                     String resultStrs = HttpRequest.get("https://webapi.mybti.cn/AppointmentRecord/GetAppointmentList?status=0&lastid=")
                             .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
@@ -747,4 +763,14 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         return AjaxResult.build2Success(true);
     }
 
+    /** 查询今天是周几 */
+    private int isWeek(){
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -1);// 添加天数，昨天
+        int week = c.get(Calendar.DAY_OF_WEEK);
+        System.out.println(week);
+        return week;
+    }
 }

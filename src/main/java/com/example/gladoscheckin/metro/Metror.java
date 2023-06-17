@@ -69,6 +69,9 @@ public class Metror {
     @TableField("APPOINT_MENT_ID")
     private String appointMentId;
 
+    @TableField(exist = false)
+    private String weekDate;
+
 //    /**
 //     * 今天是否需要抢票
 //     */

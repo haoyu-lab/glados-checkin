@@ -131,7 +131,12 @@ public class TaskUtils {
             param.set("stationName", metror.getStationName());
             param.set("enterDate", DateUtil.tomorrow().toString("yyyyMMdd"));
             param.set("snapshotTimeSlot", "0630-0930");
-            param.set("timeSlot", metror.getMetroTime());
+            if(!StringUtils.isEmpty(metror.getWeekDate())){
+                param.set("timeSlot", "0750-0800");
+            }else{
+                param.set("timeSlot", metror.getMetroTime());
+            }
+
 
             log.info("{}：地铁预约参数组装完成", metror.getName() + " " + metror.getPhone());
 
