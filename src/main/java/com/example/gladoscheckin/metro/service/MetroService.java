@@ -31,7 +31,7 @@ public interface MetroService {
 
     AjaxResult insertOrUpdateMetor(RequestVO requestVO);
 
-    AjaxResult getSubwayOrder();
+    void getSubwayOrder();
 
     AjaxResult updateAppointMentId();
 

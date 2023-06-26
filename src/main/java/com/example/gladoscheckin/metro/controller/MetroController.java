@@ -73,7 +73,8 @@ public class MetroController {
     @ApiOperation("进站后自动预约")
     @GetMapping("/getSubwayOrder")
     public AjaxResult getSubwayOrder(){
-        return metroService.getSubwayOrder();
+        metroService.getSubwayOrder();
+        return AjaxResult.build2Success(true);
     }
 
     @ApiOperation("修改下次预约ID")
