@@ -87,6 +87,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                 if("18435205284".equals(e.getPhone())){
                     week = isWeek();
                     if(week == 4){
+                        log.info("今日周四，修改小力预约时间 0750-0800");
                         e.setWeekDate("0750-0800");
                     }
                 }
@@ -617,6 +618,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                         week = isWeek();
                     }
                     if(week == 4 || week == 5){
+                        log.info("今日周四或者周五，小力进站不自动预约");
                         return;
                     }
                     //查询是否已预约下次进站
