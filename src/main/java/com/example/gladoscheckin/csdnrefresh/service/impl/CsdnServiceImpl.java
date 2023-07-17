@@ -34,6 +34,7 @@ public class CsdnServiceImpl extends ServiceImpl<CsdnDetailMapper, CsdnDetail> i
     public void csdnRefresh() {
         List<CsdnDetail> csdnDetails = baseMapper.selectList(null);
         if(csdnDetails.size() != 0){
+            log.info("=================================csdn start========================================");
             CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
                 jsoupGetIp.csdnRefresh(csdnDetails);
             },asyncTaskExecutor);

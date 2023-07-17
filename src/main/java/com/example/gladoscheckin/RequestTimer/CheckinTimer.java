@@ -80,21 +80,15 @@ public class CheckinTimer {
 
     @Scheduled(cron = "0 0/1 7,8 * * ? ")
     public void getSubwayByMinute(){
-        log.info("=================================start===================================");
         metroService.getSubwayByMinute();
-        log.info("=================================end===================================");
     }
     @Scheduled(cron = "0 0,10,20,30 9 * * ? ")
     public void getSubwayByMinute1(){
-        log.info("=================================start===================================");
         metroService.getSubwayByMinute();
-        log.info("=================================end===================================");
     }
 
     @Scheduled(cron = "0 15,45 * * * ? ")
     public void csdnRefresh(){
-        log.info("=================================start===================================");
         csdnService.csdnRefresh();
-        log.info("=================================end===================================");
     }
 }

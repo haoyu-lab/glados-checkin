@@ -607,7 +607,9 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     .eq(Metror::getIsNeedOrder,"false")
                     .eq(Metror::getTokenFlag,"Y");
             List<Metror> metrors = baseMapper.selectList(queryWrapper);
-
+            if(metrors.size() != 0){
+                log.info("================================ 进站后自动预约 start ===========================================");
+            }
             metrors.stream().forEach(e ->{
 
                 try{
