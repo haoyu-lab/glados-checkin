@@ -71,17 +71,19 @@ public class CheckinTimer {
         log.info("每天九点四十五修改用户token字段并推送消息 结束");
     }
 
-//    @Scheduled(cron = "0 0 10 * * ?")
-    public void getSubwayOrder(){
-        log.info("每天十点进站后自动预约， 开始");
-        metroService.getSubwayOrder();
-        log.info("每天十点进站后自动预约 结束");
-    }
+////    @Scheduled(cron = "0 0 10 * * ?")
+//    public void getSubwayOrder(){
+//        log.info("每天十点进站后自动预约， 开始");
+//        metroService.getSubwayOrder();
+//        log.info("每天十点进站后自动预约 结束");
+//    }
 
+    /** 进站后自动预约 */
     @Scheduled(cron = "0 0/1 7,8 * * ? ")
     public void getSubwayByMinute(){
         metroService.getSubwayByMinute();
     }
+    /** 进站后自动预约 */
     @Scheduled(cron = "0 0,10,20,30 9 * * ? ")
     public void getSubwayByMinute1(){
         metroService.getSubwayByMinute();

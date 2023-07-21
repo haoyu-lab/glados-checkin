@@ -632,7 +632,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                             .execute().body();
                     if (resultStrs != null && resultStrs.startsWith("[")) {
                         JSONArray res = JSONUtil.parseArray(resultStrs);
-                        log.info("{}：" + res.toString(),e.getName() + " " + e.getPhone());
+//                        log.info("{}：" + res.toString(),e.getName() + " " + e.getPhone());
                         if (res.size() > 0) {
                             //更新数据
                             JSONObject object = JSONUtil.parseObj(res.get(0));
@@ -644,7 +644,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                             }
 //                    return true;
                         }else{
-                            log.info("{}：待预约", e.getName() + " " + e.getPhone());
+//                            log.info("{}：待预约", e.getName() + " " + e.getPhone());
                             //需要进行预约
                             if(!StringUtils.isEmpty(e.getAppointMentId())) {
                                 //可以预约
@@ -691,7 +691,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                     } else if (resultStrs != null && resultStrs.startsWith("{")) {
 //            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
 //            log.info(jsonObject.toString());
-                        log.info("{}：" + resultStrs.toString(),e.getName() + " " + e.getPhone());
+//                        log.info("{}：" + resultStrs.toString(),e.getName() + " " + e.getPhone());
                         log.info("{}：token到期", e.getName() + " " + e.getPhone());
                         e.setTokenFlag("N");
                         e.setAppointMentId("");
