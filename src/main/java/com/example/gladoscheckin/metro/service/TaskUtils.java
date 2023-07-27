@@ -12,6 +12,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.gladoscheckin.common.SendWeChat;
+import com.example.gladoscheckin.common.TimeRangeConverter;
 import com.example.gladoscheckin.metro.Metror;
 import com.example.gladoscheckin.metro.mapper.MetrorMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -229,7 +230,9 @@ public class TaskUtils {
                             if (null != res.get("balance")) {
                                 if ((Integer) res.get("balance") > 0) {
                                     log.info("{}: 恭喜您第" + (count + 1) + "次预约成功，明天不用排队啦！", metror.getName() + " " + metror.getPhone());
-                                    emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+//                                    emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+                                    String time = TimeRangeConverter.convertTimeRange(metror.getMetroTime());
+                                    emailMessage = "恭喜您预约成功！请于下个工作日：" + time + " 前往"+ metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "扫码进站。"+ "\n 请移步 北京地铁预约出行 公众号查看";
                                     appointMentId = (String) res.get("appointmentId");
                                     flag = true;
                                 }else{
@@ -377,36 +380,6 @@ public class TaskUtils {
     }
 
     public static void main(String[] args) {
-//        String resultStr = HttpRequest.get("https://api.apihubs.cn/holiday/get?api_key=fee0ef68057340492d19ebb1e5061ae3499f&field=workday&date=20230624&cn=1")
-//                .header("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
-//                .timeout(3000)
-//                .execute().body();
-//        log.info(resultStr);
-//        JSONObject res = JSONUtil.parseObj(resultStr);
-//        JSONObject ress = res.getJSONObject("data");
-//        JSONArray reArray = ress.getJSONArray("list");
-//        JSONObject ress1 = reArray.getJSONObject(0);
-//        int response = (Integer) ress1.get("workday");
-//        if(response == 1){
-//            //说明是工作日
-//
-//        }
-//        if(response == 2){
-//            //说明是休息日
-//
-//        }
-        try{
-            String res = HttpUtil.get("https://tool.bitefu.net/jiari/?d=" + DateUtil.tomorrow().toString("yyyyMMdd"),2000);
-            log.info("检查一下明天是不是假期{}", res);
-            if ("0".equals(res)) {
-                log.info("明天要上班，还是需要抢票滴！！");
-            } else {
-                log.info("明个放假，不用抢票啦！！");
-            }
-        }catch (Exception e){
-            //第一种方法调用失败
-            log.info("第一种方法调用失败");
-            e.printStackTrace();
-        }
+        //将0800-0810修改为07:50~08:20
     }
 }
