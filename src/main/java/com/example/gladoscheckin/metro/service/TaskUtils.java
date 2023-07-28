@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -152,7 +153,8 @@ public class TaskUtils {
         LocalDateTime reservationTime = LocalDateTimeUtil.of(dateTime);
         DateTime newTime = new DateTime(DateUtil.date().toString("yyyy-MM-dd HH:mm:ss"), DatePattern.NORM_DATETIME_FORMAT);
         LocalDateTime startTime = LocalDateTimeUtil.of(newTime);
-        log.info("{},到期时间：{}",metror.getName() + " " + metror.getPhone(),tokenRxpireTime);
+        String expiredTime = LocalDateTimeToDateConversion(tokenRxpireTime);
+        log.info("{},到期时间：{}",metror.getName() + " " + metror.getPhone(),expiredTime);
         if (tokenRxpireTime.isBefore(startTime)) {
             log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
             if(!StringUtils.isEmpty(metror.getTokenFlag()) && "N".equals(metror.getTokenFlag())){
@@ -166,7 +168,7 @@ public class TaskUtils {
             return false;
         } else if (tokenRxpireTime.isBefore(reservationTime)) {
             log.info("{}：您的token即将过期，请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
-            String emailMessage = "您的授权即将过期，过期后将无法自动预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
+            String emailMessage = "您的授权即将过期，过期时间为："+ expiredTime +"  过期后将无法自动预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
             String emailHeader = "地铁预约服务授权到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
             /** 此处需添加微信通知 */
@@ -379,7 +381,19 @@ public class TaskUtils {
         return metror;
     }
 
+    public String LocalDateTimeToDateConversion(LocalDateTime localDateTime){
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        String formattedDateTime = localDateTime.format(formatter);
+        System.out.println(formattedDateTime);
+        return formattedDateTime;
+    }
+
     public static void main(String[] args) {
-        //将0800-0810修改为07:50~08:20
+        LocalDateTime localDateTime = LocalDateTime.of(2023, 7, 28, 12, 30);
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        String formattedDateTime = localDateTime.format(formatter);
+        System.out.println(formattedDateTime);
     }
 }
