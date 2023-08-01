@@ -67,10 +67,13 @@ public class CheckinServiceImpl implements CheckinService {
                 }
                 if (status == 1) {
                     if(qdMessage.equals("Can not Checkin with zero day membership")){
-                        emailHeader = "浩宇的VPN通知：签到失败！";
+                        emailHeader = "浩宇的VPN通知：签到失败！"+qdMessage;
                         log.info("签到失败:{}", qdMessage);
                     }else if(qdMessage.equals("Free users can not checkin, please upgrade to Basic/Pro plan")){
-                        emailHeader = "浩宇的VPN通知：签到失败！";
+                        emailHeader = "浩宇的VPN通知：签到失败！"+qdMessage;
+                        log.info("签到失败:{}", qdMessage);
+                    }else if(qdMessage.equals("oops, token error")){
+                        emailHeader = "浩宇的VPN通知：签到失败！"+qdMessage;
                         log.info("签到失败:{}", qdMessage);
                     }else{
                         log.info("今日已签到:{}", qdMessage);
