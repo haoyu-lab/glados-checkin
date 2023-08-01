@@ -39,12 +39,12 @@ public class CheckinServiceImpl implements CheckinService {
 
         //从表中查询
         List<Power> powerList = powerService.selectPower();
-//        powerList = powerList.stream().filter(e -> e.getEmail().contains("11034")).collect(Collectors.toList());
+        powerList = powerList.stream().filter(e -> e.getEmail().contains("11034")).collect(Collectors.toList());
         powerList.stream().forEach(e ->{
             log.info("待发送用户：{}",e.getEmail());
 //            String email = e.getEmail();
             String cookie = e.getCookie();
-            String json = "{\"token\":\"glados.network\"}";
+            String json = "{\"token\":\"glados.one\"}";
             int socketTimeout = 120 * 1000;
             int connectTimeout = 120 * 1000;
 
