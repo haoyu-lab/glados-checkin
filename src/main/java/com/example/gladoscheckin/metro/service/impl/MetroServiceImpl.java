@@ -83,6 +83,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 //            List<FutureTask<List<Void>>> fTaskes = new ArrayList<>(index);
             metrors.forEach(e ->{
                 //判断是否是小力，是否是周四
+                /**
                 int week = 0;
                 if("18435205284".equals(e.getPhone())){
                     week = isWeek();
@@ -91,6 +92,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                         e.setWeekDate("0750-0800");
                     }
                 }
+                 */
                 CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
                     taskUtils.start(e);
                 },asyncTaskExecutor);
@@ -614,6 +616,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 
                 try{
                     //如果是小力，并且是周四和周五，则跳出本次循环(进站不自动预约)
+                    /**
                     int week = 0;
                     if("18435205284".equals(e.getPhone())){
                         //查询是否周四或周五
@@ -623,6 +626,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
                         log.info("今日周四或者周五，小力进站不自动预约");
                         return;
                     }
+                     */
                     //查询是否已预约下次进站
                     String resultStrs = HttpRequest.get("https://webapi.mybti.cn/AppointmentRecord/GetAppointmentList?status=0&lastid=")
                             .header(Header.CONTENT_TYPE, "application/json;charset=UTF-8")
