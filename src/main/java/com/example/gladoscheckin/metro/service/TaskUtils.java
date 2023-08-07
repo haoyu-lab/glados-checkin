@@ -235,6 +235,7 @@ public class TaskUtils {
 //                                    emailMessage = "恭喜您地铁进站预约成功，明天不用排队啦！地点为：" + metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
                                     String time = TimeRangeConverter.convertTimeRange(metror.getMetroTime());
                                     emailMessage = "恭喜您预约成功！请于下个工作日：" + time + " 前往"+ metror.getLineName() + metror.getStationName() + res.get("stationEntrance") + "扫码进站。"+ "\n 请移步 北京地铁预约出行 公众号查看";
+                                    log.info(emailMessage);
                                     appointMentId = (String) res.get("appointmentId");
                                     flag = true;
                                 }else{
