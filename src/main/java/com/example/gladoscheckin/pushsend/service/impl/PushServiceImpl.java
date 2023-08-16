@@ -45,7 +45,7 @@ public class PushServiceImpl implements PushService {
             }
             powerList.forEach(e ->{
                 try {
-                    sendWeChat.sendMessage(null, e.getEmail(), e.getPushPlusToken(),"GlaDOS签到服务更新通知", finalMessage);
+                    sendWeChat.sendMessage(null, e.getEmail(), e.getPushPlusToken(),pushMessage.getTitle(), finalMessage);
                     count.getAndIncrement();
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -61,7 +61,7 @@ public class PushServiceImpl implements PushService {
                 }
                 metrors.forEach(e ->{
                     try {
-                        sendWeChat.sendMessageHtml(e.getName(), null, e.getPushPlusToken(),"地铁预约服务通知", finalMessage);
+                        sendWeChat.sendMessageHtml(e.getName(), null, e.getPushPlusToken(),pushMessage.getTitle(), finalMessage);
                         count.getAndIncrement();
                     } catch (Exception exception) {
                         exception.printStackTrace();
