@@ -35,4 +35,21 @@ public class PowerServiceImpl extends ServiceImpl<PowerMapper,Power> implements 
         return powerList;
     }
 
+    @Override
+    public List<Power> selectByIsSuccess() {
+        QueryWrapper<Power> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().ne(Power::getIsSuccess,"true");
+        List<Power> powerList = baseMapper.selectList(queryWrapper);
+        log.info("获取到的用户:{}",powerList);
+        return powerList;
+    }
+
+    @Override
+    public void cleanPower() {
+        Power power = new Power();
+        power.setIsSuccess("false");
+        QueryWrapper<Power> queryWrapper = new QueryWrapper<>();
+        baseMapper.update(power,queryWrapper);
+    }
+
 }

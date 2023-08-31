@@ -30,4 +30,10 @@ public class CheckinController {
     public void checkinTimer(){
         checkinTimer.checkin();
     }
+
+    @ApiOperation(value = "每日清理glados表")
+    @PostMapping("/cleanPower")
+    public void cleanPower(){
+        checkinService.cleanPower();
+    }
 }

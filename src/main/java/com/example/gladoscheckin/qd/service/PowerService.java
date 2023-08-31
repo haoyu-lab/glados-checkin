@@ -12,4 +12,7 @@ public interface PowerService extends IService<Power> {
 
     List<Power> selectPower();
 
+    List<Power> selectByIsSuccess();
+
+    void cleanPower();
 }

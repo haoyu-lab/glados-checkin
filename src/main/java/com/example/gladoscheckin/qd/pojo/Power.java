@@ -10,4 +10,6 @@ public class Power {
     private String cookie;
     /** 推送加微信推送token */
     private String pushPlusToken;
+    /** 今日是否成功 */
+    private String isSuccess;
 }

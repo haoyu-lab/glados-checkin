@@ -4,4 +4,6 @@ import com.example.gladoscheckin.common.AjaxResult;
 
 public interface CheckinService {
     AjaxResult checkin();
+
+    void cleanPower();
 }

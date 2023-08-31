@@ -25,11 +25,18 @@ public class CheckinTimer {
     @Autowired
     private CsdnService csdnService;
 
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 8,13,20 * * ?")
     public void checkin(){
-        log.info("每天五点glados签到开始");
+        log.info("每天8,13,19点glados签到开始");
         checkinService.checkin();
-        log.info("每天五点glados签到结束");
+        log.info("每天8,13,19点glados签到结束");
+    }
+
+    @Scheduled(cron = "0 0 5 * * ?")
+    public void cleanPower(){
+        log.info("每天5点glados签到开始");
+        checkinService.cleanPower();
+        log.info("每天5点glados签到结束");
     }
 
     @Scheduled(cron = "0 0 12,20 * * ?")
