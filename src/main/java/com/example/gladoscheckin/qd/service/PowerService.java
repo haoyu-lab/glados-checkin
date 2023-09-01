@@ -15,4 +15,6 @@ public interface PowerService extends IService<Power> {
     List<Power> selectByIsSuccess();
 
     void cleanPower();
+
+    AjaxResult updatePower(Power power);
 }

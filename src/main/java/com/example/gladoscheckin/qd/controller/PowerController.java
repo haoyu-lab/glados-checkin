@@ -26,10 +26,19 @@ public class PowerController {
         return powerService.insertPower(power);
     }
 
+    @ApiOperation(value = "修改glados用户")
+    @PostMapping("updatePower")
+    public AjaxResult updatePower(@RequestBody Power power){
+        return powerService.updatePower(power);
+    }
+
     @ApiOperation(value = "查询glados用户")
     @GetMapping("/selectPower")
     public AjaxResult selectPower(){
         List<Power> powers = powerService.selectPower();
         return AjaxResult.build(Status.SUCCESS,Status.SUCCESS_MSG,powers);
     }
+
+
+
 }

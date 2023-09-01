@@ -2,6 +2,7 @@ package com.example.gladoscheckin.qd.service.impl;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.gladoscheckin.common.AjaxResult;
 import com.example.gladoscheckin.common.HttpUtil;
 import com.example.gladoscheckin.common.SendEmail;
@@ -137,7 +138,7 @@ public class CheckinServiceImpl implements CheckinService {
                     log.info("签到成功:{}", qdMessage);
                     emailHeader = "浩宇的VPN通知：签到成功！";
                     e.setIsSuccess("true");
-                    powerService.saveOrUpdate(e);
+                    powerService.updateById(e);
                 }
                 if (status != 0) {
                     log.info("签到失败:{}", qdMessage);

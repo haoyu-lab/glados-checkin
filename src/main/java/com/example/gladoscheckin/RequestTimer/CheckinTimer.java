@@ -34,9 +34,9 @@ public class CheckinTimer {
 
     @Scheduled(cron = "0 0 5 * * ?")
     public void cleanPower(){
-        log.info("每天5点glados签到开始");
+        log.info("每天5点清理glados签到表开始");
         checkinService.cleanPower();
-        log.info("每天5点glados签到结束");
+        log.info("每天5点清理glados签到表结束");
     }
 
     @Scheduled(cron = "0 0 12,20 * * ?")

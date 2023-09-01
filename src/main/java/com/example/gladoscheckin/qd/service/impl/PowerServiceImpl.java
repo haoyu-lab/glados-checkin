@@ -52,4 +52,10 @@ public class PowerServiceImpl extends ServiceImpl<PowerMapper,Power> implements 
         baseMapper.update(power,queryWrapper);
     }
 
+    @Override
+    public AjaxResult updatePower(Power power) {
+        int count = baseMapper.updateById(power);
+        return AjaxResult.build2Success(count);
+    }
+
 }
