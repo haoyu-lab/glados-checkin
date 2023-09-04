@@ -36,6 +36,19 @@ public class SecurityFilter implements Filter {
 
     private List<String> ignoreList = new ArrayList<>();
 
+    /**
+     * 修改配置之后，可能会丢失忽略列表，所以需要添加处理方法
+     * @return
+     */
+    public List<String> getIgnoreList() {
+        if(ignoreList==null || ignoreList.size()==0){
+            String[] split = ignores.split(",");
+            ignoreList = Arrays.asList(split);
+        }
+        return ignoreList;
+    }
+
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         System.out.println("创建过滤器成功");
@@ -45,16 +58,34 @@ public class SecurityFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest  request=(HttpServletRequest) servletRequest;
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String pathInfo = request.getRequestURI();
         HttpServletResponse response=(HttpServletResponse) servletResponse;
         String token = request.getHeader("token");
 
-        if(!StringUtils.isEmpty(token) && "haoyujiayou".equals(token)){
-            filterChain.doFilter(servletRequest, servletResponse);
+        Boolean ignore = false;
+        if (!open) {
+            ignore = true;
         } else {
-            log.info("token错误");
-            handerMessage(response,"token错误");
+            List<String> mIgnoreList = this.getIgnoreList();
+            for (String one : mIgnoreList) {
+                if (pathInfo.indexOf(one) != -1) {
+                    ignore = true;
+                    break;
+                }
+            }
         }
+        if(!ignore){
+            if(!StringUtils.isEmpty(token) && "haoyujiayou".equals(token)){
+                filterChain.doFilter(servletRequest, servletResponse);
+            } else {
+                log.info("token错误");
+                handerMessage(response,"token错误");
+            }
+        }else{
+            filterChain.doFilter(servletRequest, servletResponse);
+        }
+
     }
 
     @Override

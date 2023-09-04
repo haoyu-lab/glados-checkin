@@ -42,6 +42,9 @@ spring:
         deny:
         reset-enable: false
         login-username: admin
+  websocket:
+    servlet:
+      path: /websocket
   main:
     allow-circular-references: true
 #  main:
@@ -81,3 +84,8 @@ push:
   rootToken: 6dc0c0dd0ef347239c0aaad2eecb1e58
 csdn:
   url: xxx
+# 权限
+security:
+  open: true
+  configure: open
+  ignores: /login,/websocket
