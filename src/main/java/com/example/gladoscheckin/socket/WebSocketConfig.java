@@ -1,6 +1,8 @@
 package com.example.gladoscheckin.socket;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -11,12 +13,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        // 注册WebSocket处理程序和映射路径
-        registry.addHandler(myWebSocketHandler(), "/websocket").withSockJS();
+        registry.addHandler(myHandler(), "/websocket").setAllowedOrigins("*");
     }
 
     @Bean
-    public MyWebSocketHandler myWebSocketHandler() {
-        return new MyWebSocketHandler();
+    public WebSocketHandler myHandler() {
+        return new MyHandler();
     }
 }
