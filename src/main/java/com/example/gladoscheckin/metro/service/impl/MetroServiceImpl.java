@@ -568,16 +568,18 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if (resultStr != null) {
             JSONObject ress;
             try {
-                ress = JSONUtil.parseObj(resultStr);
-                if (null != ress.get("balance") && (Integer) ress.get("balance") == 0) {
-                    //预约成功，发送通知并修改下次预约ID
-                    metror.setIsNeedOrder("true");
-                    metror.setAppointMentId((String) ress.get("appointmentId"));
-                    updateMetror(metror);
-                    //发送通知
-                    String emailHeader = "地铁进站自动预约成功通知";
-                    String emailMessage = "恭喜您地铁进站预约成功(本次预约为当天进站后自动预约)，地点为：" + metror.getLineName() + metror.getStationName() + ress.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
-                    sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                if(JSONUtil.isJsonObj(resultStr)){
+                    ress = JSONUtil.parseObj(resultStr);
+                    if (null != ress.get("balance") && (Integer) ress.get("balance") == 0) {
+                        //预约成功，发送通知并修改下次预约ID
+                        metror.setIsNeedOrder("true");
+                        metror.setAppointMentId((String) ress.get("appointmentId"));
+                        updateMetror(metror);
+                        //发送通知
+                        String emailHeader = "地铁进站自动预约成功通知";
+                        String emailMessage = "恭喜您地铁进站预约成功(本次预约为当天进站后自动预约)，地点为：" + metror.getLineName() + metror.getStationName() + ress.get("stationEntrance") + "\n 请移步 北京地铁预约出行 公众号查看";
+                        sendWeChat.sendMessage(metror.getName() + " " + metror.getPhone(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
+                    }
                 }
             }catch (Exception es){
                 es.printStackTrace();
