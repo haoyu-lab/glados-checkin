@@ -86,4 +86,4 @@ csdn:
 security:
   open: true
   configure: open
-  ignores: /login,/websocket
+  ignores: /login,/websocket,/updateIsVaild

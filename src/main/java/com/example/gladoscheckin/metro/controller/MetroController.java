@@ -82,4 +82,10 @@ public class MetroController {
     public AjaxResult updateAppointMentId(){
         return metroService.updateAppointMentId();
     }
+
+    @ApiOperation(value = "修改用户是否生效")
+    @GetMapping("/updateIsVaild/{phone}")
+    public AjaxResult updateIsVaild(@PathVariable("phone") String phone){
+        return metroService.updateIsVaild(phone);
+    }
 }

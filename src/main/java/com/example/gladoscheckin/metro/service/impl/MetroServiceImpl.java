@@ -716,6 +716,17 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
 
     }
 
+    @Override
+    public AjaxResult updateIsVaild(String phone) {
+        Metror metror = baseMapper.selectById(phone);
+        if(!ObjectUtils.isEmpty(metror)){
+            metror.setIsVaild("Y".equals(metror.getIsVaild()) ? "N":"Y");
+            baseMapper.updateById(metror);
+            return AjaxResult.build2Success(metror.getIsVaild());
+        }
+        return AjaxResult.build2ServerError("没有找到该手机号数据");
+    }
+
     public static boolean isNow(Date date) {
 
 
