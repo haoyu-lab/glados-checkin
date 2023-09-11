@@ -25,7 +25,7 @@ public class CheckinTimer {
     @Autowired
     private CsdnService csdnService;
 
-    @Scheduled(cron = "0 0 8,13,20 * * ?")
+    @Scheduled(cron = "0 0 8,13,19 * * ?")
     public void checkin(){
         log.info("每天8,13,19点glados签到开始");
         checkinService.checkin();
