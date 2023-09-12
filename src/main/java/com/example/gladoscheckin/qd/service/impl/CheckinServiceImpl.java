@@ -1,6 +1,7 @@
 package com.example.gladoscheckin.qd.service.impl;
 
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.gladoscheckin.common.AjaxResult;
@@ -133,40 +134,53 @@ public class CheckinServiceImpl implements CheckinService {
                 qdResponse = HttpUtil.sendPost(sendKqUrl, socketTimeout, connectTimeout, headers, null, json);
                 JSONObject jsonObject = JSONObject.parseObject(qdResponse);
                 int status = (int) jsonObject.get("code");
+                cn.hutool.json.JSONObject pointsJsonObject = null;
+                BigDecimal balance = null;
+                String change = "0";
+                BigDecimal changeDecimal = null;
                 qdMessage = (String) jsonObject.get("message");
                 if (status == 0) {
+                    pointsJsonObject = (cn.hutool.json.JSONObject) JSONUtil.parseArray(jsonObject.get("list")).get(0);
+                    balance = BigDecimal.valueOf(Long.parseLong(pointsJsonObject.get("balance").toString().substring(0,pointsJsonObject.get("balance").toString().indexOf("."))));
+                    change = pointsJsonObject.get("change").toString().replaceAll("Checkin! Get ","").replaceAll(" Points","");
                     log.info("签到成功:{}", qdMessage);
                     emailHeader = "浩宇的VPN通知：签到成功！";
+                    emailMessage = "今日获取到：" + change + "点活动点数。" + "  " + "您的随机活动点总数为：" + balance + "点，满 100点 自动兑换为10天会员时间";
                     e.setIsSuccess("true");
                     powerService.updateById(e);
                 }
-                if (status != 0) {
-                    log.info("签到失败:{}", qdMessage);
-                    emailHeader = "浩宇的VPN通知：签到失败！";
-                    emailMessage = "签到失败原因：" + qdMessage + "\n 每日签到三次（8点、13点、19点），如第一次成功，则不执行二次、三次签到";
-                }
-//                if (status == 1) {
-//                    if (qdMessage.equals("Can not Checkin with zero day membership")) {
-//                        emailHeader = "浩宇的VPN通知：签到失败！" + qdMessage;
-//                        log.info("签到失败:{}", qdMessage);
-//                    } else if (qdMessage.equals("Free users can not checkin, please upgrade to Basic/Pro plan")) {
-//                        emailHeader = "浩宇的VPN通知：签到失败！" + qdMessage;
-//                        log.info("签到失败:{}", qdMessage);
-//                    } else if (qdMessage.equals("oops, token error")) {
-//                        emailHeader = "浩宇的VPN通知：签到失败！" + qdMessage;
-//                        log.info("签到失败:{}", qdMessage);
-//                    } else if (qdMessage.equals("Get 0 day")) {
-//                        emailHeader = "浩宇的VPN通知：签到失败！" + "每次签到成功率为33%";
-//                        log.info("签到失败:{}", qdMessage);
-//                    } else {
-//                        log.info("今日已签到:{}", qdMessage);
-//                        emailHeader = "浩宇的VPN通知：今日已经签到！";
-//                    }
-//                }
-//                if (status == -2) {
+//                if (status != 0) {
 //                    log.info("签到失败:{}", qdMessage);
 //                    emailHeader = "浩宇的VPN通知：签到失败！";
+////                    emailMessage = "签到失败原因：" + qdMessage + "\n 每日签到三次（8点、13点、19点），如第一次成功，则不执行二次、三次签到";
+//                    emailMessage = "签到失败原因：" + qdMessage;
 //                }
+                if (status == 1) {
+                    pointsJsonObject = (cn.hutool.json.JSONObject) JSONUtil.parseArray(jsonObject.get("list")).get(0);
+                    balance = BigDecimal.valueOf(Long.parseLong(pointsJsonObject.get("balance").toString().substring(0,pointsJsonObject.get("balance").toString().indexOf("."))));
+                    if (qdMessage.equals("Can not Checkin with zero day membership")) {
+                        emailHeader = "浩宇的VPN通知：签到失败！" + qdMessage;
+                        log.info("签到失败:{}", qdMessage);
+                    } else if (qdMessage.equals("Free users can not checkin, please upgrade to Basic/Pro plan")) {
+                        emailHeader = "浩宇的VPN通知：签到失败！" + qdMessage;
+                        log.info("签到失败:{}", qdMessage);
+                    } else if (qdMessage.equals("oops, token error")) {
+                        emailHeader = "浩宇的VPN通知：签到失败！" + qdMessage;
+                        log.info("签到失败:{}", qdMessage);
+                    } else if (qdMessage.equals("Get 0 day")) {
+                        emailHeader = "浩宇的VPN通知：签到失败！" + "每次签到成功率为33%";
+                        log.info("签到失败:{}", qdMessage);
+                    } else {
+                        log.info("今日已签到:{}", qdMessage);
+                        changeDecimal = BigDecimal.valueOf(Long.parseLong(pointsJsonObject.get("change").toString().substring(0,pointsJsonObject.get("change").toString().indexOf("."))));
+                        emailHeader = "浩宇的VPN通知：今日已经签到！";
+                        emailMessage = "今日获取到：" + changeDecimal + "点活动点数。" + "  " + "您的随机活动点总数为：" + balance + "点，满 100点 自动兑换为10天会员时间";
+                    }
+                }
+                if (status == -2) {
+                    log.info("签到失败:{}", qdMessage);
+                    emailHeader = "浩宇的VPN通知：签到失败！";
+                }
 
                 //调用glados"status"接口获取邮箱及剩余天数及剩余流量
                 String sendStatusUrl = "https://glados.one/api/user/status";
