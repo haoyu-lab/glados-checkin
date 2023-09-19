@@ -91,8 +91,14 @@ public class CheckinTimer {
         metroService.getSubwayByMinute();
     }
     /** 进站后自动预约 */
-    @Scheduled(cron = "0 0,10,20,30 9 * * ? ")
+    @Scheduled(cron = "0 0,10,20,30,45 9 * * ? ")
     public void getSubwayByMinute1(){
+        metroService.getSubwayByMinute();
+    }
+
+    /** 进站后自动预约 */
+    @Scheduled(cron = "0 30 10 * * ? ")
+    public void getSubwayByMinute2(){
         metroService.getSubwayByMinute();
     }
 
