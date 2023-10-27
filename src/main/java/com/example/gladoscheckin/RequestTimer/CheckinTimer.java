@@ -1,5 +1,6 @@
 package com.example.gladoscheckin.RequestTimer;
 
+import com.example.gladoscheckin.aliyuncheckin.service.AliyunCheckinService;
 import com.example.gladoscheckin.csdnrefresh.service.CsdnService;
 import com.example.gladoscheckin.metro.service.CheckTmorrowService;
 import com.example.gladoscheckin.metro.service.MetroService;
@@ -24,6 +25,9 @@ public class CheckinTimer {
 
     @Autowired
     private CsdnService csdnService;
+
+    @Autowired
+    private AliyunCheckinService aliyunCheckinService;
 
     @Scheduled(cron = "0 0 8,13,19 * * ?")
     public void checkin(){
@@ -105,5 +109,13 @@ public class CheckinTimer {
     @Scheduled(cron = "0 15,45 * * * ? ")
     public void csdnRefresh(){
         csdnService.csdnRefresh();
+    }
+
+    /** 阿里云签到 */
+    @Scheduled(cron = "0 30 21 * * ?")
+    public void aliyunCheckin(){
+        log.info("每天晚上九点三十阿里云签到， 开始");
+        aliyunCheckinService.aliyunCheckin();
+        log.info("每天晚上九点三十阿里云签到， 结束");
     }
 }
