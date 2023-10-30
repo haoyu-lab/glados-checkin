@@ -58,7 +58,8 @@ public class AliyunCheckinServiceImpl extends ServiceImpl<AliyunCheckinMapper, A
                         "奖励：" + aliyunCheckinVO.getAwardNotice() + "\n" +
                         "任务：" + aliyunCheckinVO.getTasknotice();
                 try {
-                    sendWeChat.sendMessage("阿里云签到 "+aliyunCheckinVO.getName() + " " + null, null, e.getPushPlusToken(), emailHeader, emailMessage);
+                    log.info(emailMessage);
+                    sendWeChat.sendMessage("阿里云签到 "+ e.getName() + " " + null, null, e.getPushPlusToken(), emailHeader, emailMessage);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
