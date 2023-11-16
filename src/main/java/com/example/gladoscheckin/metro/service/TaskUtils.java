@@ -321,6 +321,8 @@ public class TaskUtils {
                 log.info("{}：" + res.toString(),metror.getName() + " " + metror.getPhone());
                 log.info("{}：已预约，不可重复预约", metror.getName() + " " + metror.getPhone());
                 return true;
+            }else {
+                log.info("{}：待预约", metror.getName() + " " + metror.getPhone());
             }
         } else if (resultStrs != null && resultStrs.startsWith("{")) {
 //            JSONObject jsonObject = JSONUtil.parseObj(resultStrs);
