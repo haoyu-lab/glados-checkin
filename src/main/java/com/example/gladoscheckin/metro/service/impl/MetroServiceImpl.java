@@ -36,6 +36,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -181,8 +183,11 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if(StringUtils.isEmpty(viCode.getPhone())){
             return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
+        if (isValidPhoneNumber(viCode.getPhone())) {
+            return AjaxResult.build(Status.SERVER_ERROR,"手机号格式不正确","手机号格式不正确");
+        }
         if(StringUtils.isEmpty(viCode.getVerifyCode())){
-            return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
+            return AjaxResult.build(Status.SERVER_ERROR,"请输入验证码","请输入验证码");
         }
         viCode.setPhone(viCode.getPhone().trim());
         JSONObject param = new JSONObject();
@@ -265,6 +270,17 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
             }
         }
         return AjaxResult.build2ServerError("token刷新失败");
+    }
+    /**中国大陆手机号正则表达式（不包括港澳台）*/
+    private static final String PHONE_PATTERN = "^1(3[0-9]|4[5-9]|5[0-35-9]|66|7[0-8]|8[0-9]|9[0-35-9])\\d{8}$";
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return false;
+        }
+
+        Pattern pattern = Pattern.compile(PHONE_PATTERN);
+        Matcher matcher = pattern.matcher(phoneNumber);
+        return matcher.matches();
     }
 
     @Override
