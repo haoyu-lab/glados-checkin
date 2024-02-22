@@ -184,6 +184,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if(StringUtils.isEmpty(viCode.getVerifyCode())){
             return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
+        viCode.setPhone(viCode.getPhone().trim());
         JSONObject param = new JSONObject();
         param.set("clientId", "7e80a759-5bf3-4504-bfab-71572b025005");
         param.set("openId", "");
