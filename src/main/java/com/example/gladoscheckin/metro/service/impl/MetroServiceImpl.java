@@ -183,7 +183,7 @@ public class MetroServiceImpl extends ServiceImpl<MetrorMapper, Metror> implemen
         if(StringUtils.isEmpty(viCode.getPhone())){
             return AjaxResult.build(Status.SERVER_ERROR,"请输入手机号","请输入手机号");
         }
-        if (isValidPhoneNumber(viCode.getPhone())) {
+        if (!isValidPhoneNumber(viCode.getPhone())) {
             return AjaxResult.build(Status.SERVER_ERROR,"手机号格式不正确","手机号格式不正确");
         }
         if(StringUtils.isEmpty(viCode.getVerifyCode())){
