@@ -156,19 +156,19 @@ public class TaskUtils {
         String expiredTime = LocalDateTimeToDateConversion(tokenRxpireTime);
         log.info("{},到期时间：{}",metror.getName() + " " + metror.getPhone(),expiredTime);
         if (tokenRxpireTime.isBefore(startTime)) {
-            log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
+            log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/subway  登录授权！", metror.getName() + " " + metror.getPhone());
             if(!StringUtils.isEmpty(metror.getTokenFlag()) && "N".equals(metror.getTokenFlag())){
                 return false;
             }
-            String emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
+            String emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com/subway\">https://www.huyoa.com/subway</a>  登录授权！";
             String emailHeader = "地铁预约服务授权到期提醒！！！";
             /** 此处需添加微信通知 */
             sendWeChat.sendMessage(metror.getName(), null, metror.getPushPlusToken(), emailHeader, emailMessage);
 
             return false;
         } else if (tokenRxpireTime.isBefore(reservationTime)) {
-            log.info("{}：您的token即将过期，请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
-            String emailMessage = "您的授权即将过期，过期时间为："+ expiredTime +"  过期后将无法自动预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
+            log.info("{}：您的token即将过期，请尽快前往： https://www.huyoa.com/subway  登录授权！", metror.getName() + " " + metror.getPhone());
+            String emailMessage = "您的授权即将过期，过期时间为："+ expiredTime +"  过期后将无法自动预约！请尽快前往： <a href=\"https://www.huyoa.com/subway\">https://www.huyoa.com/subway</a>  登录授权！";
             String emailHeader = "地铁预约服务授权到期提醒！！";
 //            MailUtils.sendMail(email, "您的token将在一天后过期，请尽快修改！");
             /** 此处需添加微信通知 */
@@ -243,8 +243,8 @@ public class TaskUtils {
                                 }
                             } else {
                                 if(!StringUtils.isEmpty(res.get("title")) && "Unauthorized".equals(res.get("title"))){
-                                    log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/  登录授权！", metror.getName() + " " + metror.getPhone());
-                                    emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com\">https://www.huyoa.com</a>  登录授权！";
+                                    log.info("{}：您的授权已过期，无法进行预约！请尽快前往： https://www.huyoa.com/subway  登录授权！", metror.getName() + " " + metror.getPhone());
+                                    emailMessage = "您的授权已过期，无法进行预约！请尽快前往： <a href=\"https://www.huyoa.com/subway\">https://www.huyoa.com/subway</a>  登录授权！";
                                     String emailHeader = "地铁预约服务授权到期提醒！！！";
                                     metror.setTokenFlag("N");
                                     /** 此处需添加微信通知 */
