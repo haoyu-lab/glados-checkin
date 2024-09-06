@@ -29,7 +29,7 @@ public class CheckinTimer {
     @Autowired
     private AliyunCheckinService aliyunCheckinService;
 
-    @Scheduled(cron = "0 0 8,13,19 * * ?")
+//    @Scheduled(cron = "0 0 8,13,19 * * ?")
     public void checkin(){
         log.info("每天8,13,19点glados签到开始");
         checkinService.checkin();
@@ -112,7 +112,7 @@ public class CheckinTimer {
     }
 
     /** 阿里云签到 */
-    @Scheduled(cron = "0 30 21 * * ?")
+//    @Scheduled(cron = "0 30 21 * * ?")
     public void aliyunCheckin(){
         log.info("每天晚上九点三十阿里云签到， 开始");
         aliyunCheckinService.aliyunCheckin();
